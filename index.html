@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<title>English Speaking Practice</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: #2a2a38;
+    --accent: #7c6aff;
+    --accent2: #ff6a6a;
+    --accent3: #6affa0;
+    --text: #e8e8f0;
+    --text-dim: #7070a0;
+    --text-dimmer: #40405a;
+    --nav-h: 64px;
+    --header-h: 54px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
+
+  header {
+    height: var(--header-h);
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  header h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: 0.04em; }
+  header h1 span { color: var(--accent); }
+  .badge { font-family: 'DM Mono', monospace; font-size: 0.58rem; background: rgba(124,106,255,0.15); color: var(--accent); border: 1px solid rgba(124,106,255,0.3); padding: 3px 7px; border-radius: 4px; letter-spacing: 0.08em; }
+
+  .scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 18px 16px calc(var(--nav-h) + 18px); }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  .screen { display: none; animation: fadeUp 0.22s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .screen-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem; margin-bottom: 4px; }
+  .screen-desc { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 18px; line-height: 1.6; }
+
+  .bottom-nav {
+    height: var(--nav-h);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; border: none; background: transparent; color: var(--text-dimmer); }
+  .nav-item.active { color: var(--accent); }
+  .nav-icon { font-size: 1.2rem; line-height: 1; }
+  .nav-label { font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.04em; }
+
+  /* HOME */
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 20px; }
+  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 8px; text-align: center; }
+  .stat-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.6rem; color: var(--accent); }
+  .stat-lbl { font-size: 0.62rem; color: var(--text-dim); margin-top: 2px; }
+
+  .method-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: transform 0.1s; }
+  .method-card:active { transform: scale(0.98); }
+  .method-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .method-card h3 { font-size: 0.88rem; font-weight: 600; margin-bottom: 2px; }
+  .method-card p { font-size: 0.74rem; color: var(--text-dim); line-height: 1.4; }
+  .method-arrow { margin-left: auto; color: var(--text-dimmer); font-size: 1.1rem; }
+
+  .tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; letter-spacing: 0.06em; }
+  .tag-a { background: rgba(124,106,255,0.15); color: var(--accent); border: 1px solid rgba(124,106,255,0.25); }
+  .tag-b { background: rgba(255,200,100,0.15); color: #ffcc64; border: 1px solid rgba(255,200,100,0.25); }
+  .tag-c { background: rgba(255,106,106,0.15); color: var(--accent2); border: 1px solid rgba(255,106,106,0.25); }
+  .tag-d { background: rgba(106,255,160,0.15); color: var(--accent3); border: 1px solid rgba(106,255,160,0.25); }
+
+  /* METHOD A */
+  .filter-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 12px; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-chip { font-family: 'DM Mono', monospace; font-size: 0.66rem; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; white-space: nowrap; }
+  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .flashcard { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; transition: transform 0.1s; }
+  .flashcard:active { transform: scale(0.99); }
+  .flashcard.selected { border-color: var(--accent); background: rgba(124,106,255,0.08); }
+  .fc-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; color: transparent; }
+  .flashcard.selected .fc-check { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .fc-en { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--text); line-height: 1.5; margin-bottom: 4px; }
+  .fc-ja { font-size: 0.73rem; color: var(--text-dim); }
+  .fc-ctx { font-size: 0.6rem; color: var(--text-dimmer); margin-top: 3px; font-family: 'DM Mono', monospace; }
+
+  .btn-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .btn { font-family: 'DM Mono', monospace; font-size: 0.74rem; letter-spacing: 0.05em; padding: 11px 18px; border-radius: 10px; border: none; cursor: pointer; transition: transform 0.1s; -webkit-tap-highlight-color: transparent; }
+  .btn:active { transform: scale(0.96); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-green { background: rgba(106,255,160,0.15); color: var(--accent3); border: 1px solid rgba(106,255,160,0.3); }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* PRACTICE MODAL */
+  .practice-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .practice-modal.open { display: flex; animation: fadeUp 0.2s; }
+  .practice-inner { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 26px 22px; width: 100%; max-width: 400px; text-align: center; }
+  .pm-progress { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--text-dimmer); letter-spacing: 0.1em; margin-bottom: 16px; text-align: left; }
+  .pm-phrase { font-family: 'DM Mono', monospace; font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 6px; }
+  .pm-ja { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 20px; }
+  .rep-ring { width: 86px; height: 86px; border-radius: 50%; background: conic-gradient(var(--accent) 0%, var(--surface2) 0%); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; position: relative; }
+  .rep-ring::before { content: ''; position: absolute; inset: 8px; background: var(--surface); border-radius: 50%; }
+  .rep-num { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.7rem; color: var(--accent); position: relative; z-index: 1; }
+  .rep-hint { font-size: 0.7rem; color: var(--text-dimmer); margin-bottom: 18px; }
+  .pm-btn-row { display: flex; gap: 8px; margin-bottom: 10px; }
+
+  /* METHOD B */
+  .b-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 10px; }
+  .b-num { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--text-dimmer); margin-bottom: 8px; }
+  .b-jp { font-size: 1.05rem; color: var(--text); margin-bottom: 12px; line-height: 1.6; }
+  .b-answer { background: rgba(106,255,160,0.06); border: 1px solid rgba(106,255,160,0.2); border-radius: 8px; padding: 11px 14px; font-family: 'DM Mono', monospace; font-size: 0.86rem; color: var(--accent3); display: none; margin-top: 10px; animation: fadeUp 0.2s; }
+  .b-answer.shown { display: block; }
+
+  /* METHOD C */
+  .sit-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 15px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: transform 0.1s; }
+  .sit-item:active { transform: scale(0.98); }
+  .sit-item.active { border-color: var(--accent2); background: rgba(255,106,106,0.06); }
+  .sit-icon { font-size: 1.3rem; }
+  .sit-name { font-size: 0.88rem; font-weight: 500; }
+  .sit-desc { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+  .sit-arrow { margin-left: auto; color: var(--text-dimmer); font-size: 1rem; }
+  .phrase-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; margin-bottom: 6px; margin-left: 12px; }
+  .phrase-en { font-family: 'DM Mono', monospace; font-size: 0.86rem; color: var(--accent3); margin-bottom: 4px; line-height: 1.5; }
+  .phrase-ja { font-size: 0.75rem; color: var(--text-dim); }
+
+  /* METHOD D — full height chat */
+  #screen-methodD { height: calc(100vh - var(--header-h) - var(--nav-h)); display: none; flex-direction: column; }
+  #screen-methodD.active { display: flex; }
+  .topic-scroll { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .topic-scroll::-webkit-scrollbar { display: none; }
+  .topic-chip { font-family: 'DM Mono', monospace; font-size: 0.66rem; padding: 7px 13px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; white-space: nowrap; }
+  .topic-chip.active { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+  .chat-msgs { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+  .chat-msgs::-webkit-scrollbar { display: none; }
+  .msg { display: flex; gap: 8px; animation: fadeUp 0.2s; }
+  .msg.user { flex-direction: row-reverse; }
+  .msg-av { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 0.6rem; flex-shrink: 0; }
+  .msg.ai .msg-av { background: rgba(124,106,255,0.2); color: var(--accent); border: 1px solid rgba(124,106,255,0.3); }
+  .msg.user .msg-av { background: rgba(255,106,106,0.2); color: var(--accent2); border: 1px solid rgba(255,106,106,0.3); }
+  .msg-bub { max-width: 82%; padding: 10px 13px; border-radius: 14px; font-size: 0.86rem; line-height: 1.6; }
+  .msg.ai .msg-bub { background: var(--surface2); border: 1px solid var(--border); }
+  .msg.user .msg-bub { background: rgba(255,106,106,0.1); border: 1px solid rgba(255,106,106,0.2); }
+  .chat-input-row { display: flex; gap: 8px; padding: 10px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; align-items: flex-end; }
+  .chat-textarea { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; padding: 10px 15px; outline: none; resize: none; max-height: 100px; line-height: 1.4; -webkit-appearance: none; }
+  .chat-textarea:focus { border-color: var(--accent); }
+  .chat-textarea::placeholder { color: var(--text-dimmer); }
+  .send-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); border: none; color: #fff; font-size: 1.1rem; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .send-btn:active { transform: scale(0.92); }
+  .dots { display: flex; gap: 5px; }
+  .dots span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: bounce 1.2s infinite; }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ENGLISH <span>SPEAKING</span></h1>
+  <div class="badge">PRACTICE</div>
+</header>
+
+<div class="scroll-area" id="scroll-area">
+
+  <!-- HOME -->
+  <div id="screen-home" class="screen active">
+    <div class="screen-title">Today's Practice</div>
+    <div class="screen-desc">4つのメソッドで話す回路を作る。</div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-val" id="stat-streak">0</div><div class="stat-lbl">streak</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-sessions">0</div><div class="stat-lbl">sessions</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-phrases">0</div><div class="stat-lbl">phrases</div></div>
+    </div>
+    <div class="method-card" onclick="showScreen('methodA')">
+      <div class="method-icon" style="background:rgba(124,106,255,0.15)">🗂️</div>
+      <div><h3>A / Script Cards</h3><p>状況別フレーズを選んで暗唱練習</p></div>
+      <div class="method-arrow">›</div>
+    </div>
+    <div class="method-card" onclick="showScreen('methodB')">
+      <div class="method-icon" style="background:rgba(255,200,100,0.15)">🔄</div>
+      <div><h3>B / JP → EN Replace</h3><p>日本語を見て即座に英語に変換</p></div>
+      <div class="method-arrow">›</div>
+    </div>
+    <div class="method-card" onclick="showScreen('methodC')">
+      <div class="method-icon" style="background:rgba(255,106,106,0.15)">🎙️</div>
+      <div><h3>C / Commentary</h3><p>状況別・実況中継フレーズ集</p></div>
+      <div class="method-arrow">›</div>
+    </div>
+    <div class="method-card" onclick="showScreen('methodD')">
+      <div class="method-icon" style="background:rgba(106,255,160,0.15)">💬</div>
+      <div><h3>D / AI Chat</h3><p>AIと英語で会話練習・フィードバックあり</p></div>
+      <div class="method-arrow">›</div>
+    </div>
+  </div>
+
+  <!-- METHOD A -->
+  <div id="screen-methodA" class="screen">
+    <div class="tag tag-a">METHOD A</div>
+    <div class="screen-title">Script Cards</div>
+    <div class="screen-desc">フレーズをタップして選択。PRACTICE で10回声に出す。</div>
+    <div class="filter-row" id="filter-row"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="selectRandom5()">🎲 RANDOM 5</button>
+      <button class="btn btn-primary" id="practice-btn" onclick="openPractice()" disabled>▶ PRACTICE</button>
+    </div>
+    <div id="flashcard-list"></div>
+  </div>
+
+  <!-- METHOD B -->
+  <div id="screen-methodB" class="screen">
+    <div class="tag tag-b">METHOD B</div>
+    <div class="screen-title">JP → EN Replace</div>
+    <div class="screen-desc">日本語を見て英語を声に出す。タップして答えを確認。</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="startMethodB()">▶ START</button>
+      <button class="btn btn-secondary" onclick="shuffleB()">🔀 SHUFFLE</button>
+    </div>
+    <div id="b-list"></div>
+  </div>
+
+  <!-- METHOD C -->
+  <div id="screen-methodC" class="screen">
+    <div class="tag tag-c">METHOD C</div>
+    <div class="screen-title">Running Commentary</div>
+    <div class="screen-desc">状況をタップしてフレーズを確認。その場面で声に出す。</div>
+    <div id="sit-list"></div>
+  </div>
+
+</div><!-- /scroll-area -->
+
+<!-- METHOD D -->
+<div id="screen-methodD" class="screen">
+  <div class="topic-scroll" id="topic-bar"></div>
+  <div class="chat-msgs" id="chat-msgs">
+    <div class="msg ai">
+      <div class="msg-av">AI</div>
+      <div class="msg-bub">Hello! Choose a topic and let's start. Don't worry about mistakes — just speak your mind. I'll give gentle feedback after each message. 💬</div>
+    </div>
+  </div>
+  <div class="chat-input-row">
+    <textarea class="chat-textarea" id="chat-input" rows="1" placeholder="Type in English…" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" onclick="sendChat()">↑</button>
+  </div>
+</div>
+
+<!-- PRACTICE MODAL -->
+<div class="practice-modal" id="practice-modal">
+  <div class="practice-inner">
+    <div class="pm-progress" id="pm-progress">1 / 5</div>
+    <div class="pm-phrase" id="pm-phrase"></div>
+    <div class="pm-ja" id="pm-ja"></div>
+    <div class="rep-ring" id="rep-ring"><div class="rep-num" id="rep-num">0</div></div>
+    <div class="rep-hint">/ 10 reps — 声に出して言いましょう</div>
+    <div class="pm-btn-row">
+      <button class="btn btn-green" style="flex:1" onclick="countRep()">✓ SAID IT</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="nextPhrase()">NEXT →</button>
+    </div>
+    <button class="btn btn-secondary" style="width:100%" onclick="closePractice()">CLOSE</button>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="showScreen('home')"><div class="nav-icon">🏠</div><div class="nav-label">HOME</div></button>
+  <button class="nav-item" onclick="showScreen('methodA')"><div class="nav-icon">🗂️</div><div class="nav-label">SCRIPTS</div></button>
+  <button class="nav-item" onclick="showScreen('methodB')"><div class="nav-icon">🔄</div><div class="nav-label">JP→EN</div></button>
+  <button class="nav-item" onclick="showScreen('methodC')"><div class="nav-icon">🎙️</div><div class="nav-label">LIVE</div></button>
+  <button class="nav-item" onclick="showScreen('methodD')"><div class="nav-icon">💬</div><div class="nav-label">AI CHAT</div></button>
+</nav>
+
+<script>
+const PHRASES = [
+  { en: "Alright, another day at the office. Let's get this done.", ja: "よし、また仕事の一日だ。やるか。", cat: "morning", ctx: "起床時" },
+  { en: "The commute is 10 minutes to the station. Not bad.", ja: "駅まで10分。まあ悪くない。", cat: "morning", ctx: "歩き始め" },
+  { en: "This 10-minute walk is probably the only exercise I get today.", ja: "この10分が今日唯一の運動かも。", cat: "morning", ctx: "通勤中" },
+  { en: "I need to prep for the 9 o'clock meeting.", ja: "9時の会議の準備をしないと。", cat: "morning", ctx: "通勤中" },
+  { en: "It's a bit chilly this morning. Should've worn a jacket.", ja: "今朝は少し寒い。ジャケット着ればよかった。", cat: "morning", ctx: "外に出た瞬間" },
+  { en: "Making coffee. I need this.", ja: "コーヒーを入れる。これがないとね。", cat: "morning", ctx: "朝のコーヒー" },
+  { en: "Bag, keys, phone. Let's go.", ja: "鞄、鍵、スマホ。行こう。", cat: "morning", ctx: "出発前" },
+  { en: "What should I have for lunch?", ja: "ランチ何にしようか？", cat: "lunch", ctx: "昼時" },
+  { en: "I want something decent, not just convenience store food.", ja: "コンビニじゃなくて、ちゃんとしたものが食べたい。", cat: "lunch", ctx: "ランチ選び" },
+  { en: "I've been eating out every day this week. My wallet is hurting.", ja: "今週ずっと外食だ。財布が痛い。", cat: "lunch", ctx: "ランチ中" },
+  { en: "I miss home cooking. This project needs to wrap up soon.", ja: "自炊が恋しい。このプロジェクト早く終わってほしい。", cat: "lunch", ctx: "ランチ中" },
+  { en: "This is actually pretty good. The broth is rich.", ja: "これ意外と美味しい。出汁が濃い。", cat: "lunch", ctx: "食事中" },
+  { en: "Not worth the price, honestly.", ja: "正直、値段に見合わない。", cat: "lunch", ctx: "食後" },
+  { en: "I only have 30 minutes. Better eat fast.", ja: "30分しかない。早く食べないと。", cat: "lunch", ctx: "昼休み" },
+  { en: "The key message I need to get across today is...", ja: "今日伝えるべき核心は...", cat: "work", ctx: "会議前" },
+  { en: "The client is going to push back on the timeline.", ja: "クライアントはスケジュールに反発してくるだろう。", cat: "work", ctx: "会議前" },
+  { en: "This analysis isn't adding up. Let me rethink the assumptions.", ja: "この分析、合わない。仮定を見直そう。", cat: "work", ctx: "作業中" },
+  { en: "I'm a manager, but I'm still doing analyst work. Something's off.", ja: "マネージャーなのにアナリスト仕事している。何かがおかしい。", cat: "work", ctx: "仕事中" },
+  { en: "Deadline is Friday. That's doable if I focus.", ja: "締切は金曜日。集中すれば間に合う。", cat: "work", ctx: "タスク確認" },
+  { en: "It's only 3 PM and I'm already drained.", ja: "まだ3時なのにもう消耗している。", cat: "work", ctx: "午後" },
+  { en: "I need a coffee. Badly.", ja: "コーヒーが必要。切実に。", cat: "work", ctx: "午後の眠気" },
+  { en: "Why am I still here at 9 PM?", ja: "なんで夜9時にまだここにいるんだ。", cat: "work", ctx: "残業中" },
+  { en: "Today was productive. Closed two key issues with the client.", ja: "今日は生産的だった。クライアントとの重要課題を2つ解決した。", cat: "evening", ctx: "帰宅中の振り返り" },
+  { en: "That meeting went sideways. I should have pushed back earlier.", ja: "あの会議はうまくいかなかった。もっと早く反論すべきだった。", cat: "evening", ctx: "反省" },
+  { en: "I want something satisfying after this long day.", ja: "長い一日の後は、満足できるものが食べたい。", cat: "evening", ctx: "夕食選び" },
+  { en: "I really want to cook my own food. I know exactly what I want to eat.", ja: "本当に自炊したい。自分の食べたいものがわかっている。", cat: "evening", ctx: "夕食時の思い" },
+  { en: "How long am I going to keep doing this?", ja: "あとどれくらいこれを続けるんだろう。", cat: "career", ctx: "帰り道" },
+  { en: "I have the skills. I have the network. What's holding me back?", ja: "スキルもある。人脈もある。何が自分を止めているんだ？", cat: "career", ctx: "独立を考えるとき" },
+  { en: "If I go independent, what would my first client look like?", ja: "独立したら、最初のクライアントはどんな企業だろう？", cat: "career", ctx: "独立を考えるとき" },
+  { en: "I should update my LinkedIn this weekend.", ja: "今週末、LinkedInを更新しないと。", cat: "career", ctx: "転職活動" },
+  { en: "What kind of life do I actually want in 5 years?", ja: "5年後、自分は本当にどんな生活を望んでいるんだろう？", cat: "career", ctx: "将来を考えるとき" },
+  { en: "I need to think seriously about my next move.", ja: "次のキャリアを真剣に考える必要がある。", cat: "career", ctx: "帰り道" },
+  { en: "He's growing up so fast. I want to spend more time with him.", ja: "あの子の成長は早い。もっと一緒にいたい。", cat: "family", ctx: "息子を見て" },
+  { en: "We haven't had a proper dinner together all week.", ja: "今週、ちゃんとした夕食を一緒に食べていない。", cat: "family", ctx: "週末に気づく" },
+  { en: "This is what I'm working for. I need to protect this time.", ja: "これが自分の頑張る理由だ。この時間は守らないと。", cat: "family", ctx: "家族といる時間" },
+  { en: "Finally cooking at home. This is what I actually enjoy.", ja: "やっと家で料理できる。これが自分の楽しみだ。", cat: "family", ctx: "週末の自炊" },
+];
+
+const CATS = [
+  { id:'all', label:'ALL' }, { id:'morning', label:'🌅 朝' }, { id:'lunch', label:'🍜 ランチ' },
+  { id:'work', label:'💼 仕事' }, { id:'evening', label:'🌙 夜' }, { id:'career', label:'🚀 転職' }, { id:'family', label:'👨‍👩‍👦 家族' },
+];
+
+const TRANSLATIONS = [
+  { ja:"腹減ったな", en:"I'm hungry." },
+  { ja:"眠い", en:"I'm so tired." },
+  { ja:"この分析おかしいな", en:"Something's off with this analysis." },
+  { ja:"早く帰りたい", en:"I want to go home." },
+  { ja:"転職どうしようかな", en:"I need to think about my next move." },
+  { ja:"今日の会議うまくいった", en:"Today's meeting went well." },
+  { ja:"クライアントが難しい", en:"The client is being difficult." },
+  { ja:"締切に間に合いそうにない", en:"I don't think I'll make the deadline." },
+  { ja:"もう少し時間が必要だ", en:"I need a bit more time." },
+  { ja:"それは良いアイデアだと思う", en:"I think that's a good idea." },
+  { ja:"もう一度確認してもいいですか", en:"Could you go over that again?" },
+  { ja:"そのリスクについてどう思いますか", en:"What's your take on that risk?" },
+  { ja:"私の意見では、", en:"From my perspective," },
+  { ja:"重要なポイントは", en:"The key point here is" },
+  { ja:"少し考える時間をください", en:"Let me think about that for a moment." },
+  { ja:"独立したい", en:"I want to go independent." },
+  { ja:"家族との時間が足りない", en:"I'm not spending enough time with my family." },
+  { ja:"このプロジェクト、いつ終わるんだ", en:"When is this project going to end?" },
+  { ja:"週末は自炊しよう", en:"I'll cook at home this weekend." },
+  { ja:"もっとコントロールが欲しい", en:"I want more control over my work." },
+];
+
+const SITUATIONS = [
+  { id:"wakeup", icon:"⏰", name:"起床・朝の準備", desc:"歯磨き、コーヒー、出発前", phrases:[
+    { en:"Brushing my teeth. Almost ready.", ja:"歯磨き中。もうすぐ準備完了。" },
+    { en:"Making coffee. I need this.", ja:"コーヒーを作っている。これが必要だ。" },
+    { en:"Okay. Bag, keys, phone. Let's go.", ja:"よし。鞄、鍵、スマホ。行こう。" },
+    { en:"Running a bit late. Need to hurry.", ja:"少し遅れている。急がないと。" },
+  ]},
+  { id:"commute", icon:"🚶", name:"通勤（駅まで10分）", desc:"歩きながら実況", phrases:[
+    { en:"Walking to the station. 10 minutes.", ja:"駅に向かって歩いている。10分。" },
+    { en:"It's cold today. Should've worn a coat.", ja:"今日は寒い。コートを着ればよかった。" },
+    { en:"Train's coming in 3 minutes.", ja:"電車は3分後に来る。" },
+    { en:"Got a seat. Nice.", ja:"座れた。ラッキー。" },
+    { en:"Checking messages. Lots of them.", ja:"メッセージを確認している。たくさん来ている。" },
+  ]},
+  { id:"meeting", icon:"💼", name:"会議前後", desc:"準備・振り返り", phrases:[
+    { en:"Pulling up the slides. Meeting in 5.", ja:"スライドを開いている。会議まで5分。" },
+    { en:"Three agenda items. Keep it tight.", ja:"アジェンダは3つ。簡潔にいこう。" },
+    { en:"Good meeting. Hit the key points.", ja:"良い会議だった。重要なポイントを押さえた。" },
+    { en:"That could have gone better.", ja:"もっとうまくできたな。" },
+  ]},
+  { id:"lunch", icon:"🍜", name:"ランチ選び", desc:"何を食べるか考えながら", phrases:[
+    { en:"What do I feel like today? Ramen, maybe.", ja:"今日は何が食べたいか。ラーメンかな。" },
+    { en:"This smells amazing. Going in.", ja:"すごく美味しそうな匂いだ。入ろう。" },
+    { en:"Only 20 minutes. Gotta be quick.", ja:"20分しかない。早くしないと。" },
+    { en:"Not bad. I'll come back here.", ja:"悪くない。また来よう。" },
+  ]},
+  { id:"evening", icon:"🌙", name:"帰宅・夕食", desc:"電車の中、夕食選び", phrases:[
+    { en:"Heading home. Finally.", ja:"帰宅中。やっと。" },
+    { en:"What do I want for dinner? Something warm.", ja:"夕食は何にしよう。温かいものがいい。" },
+    { en:"Long day. Good to be home.", ja:"長い一日だった。家に帰れてよかった。" },
+    { en:"Sitting down. Letting go of work mode.", ja:"座る。仕事モードをオフにする。" },
+  ]},
+  { id:"thinking", icon:"🤔", name:"転職・将来を考える", desc:"ひとりでいるとき", phrases:[
+    { en:"What am I doing with my career?", ja:"キャリアをどうしたいんだろう。" },
+    { en:"Five years from now. What does that look like?", ja:"5年後。どんな姿になっているだろう。" },
+    { en:"I have the skills. Now what?", ja:"スキルはある。次は何だ？" },
+    { en:"First step: update the resume.", ja:"まずは：職務経歴書を更新する。" },
+  ]},
+];
+
+const TOPICS = [
+  { id:"intro", label:"自己紹介", prompt:"Practice business self-introduction. Ask the user to introduce themselves as a management consultant, respond naturally, ask follow-up questions. After each user message note 1 strength + 1 improvement (mark 💡). Be warm and concise." },
+  { id:"meeting", label:"会議意見", prompt:"Simulate a business meeting about project strategy. Play a client or colleague. After each user message give 1 positive note + 1 language tip (mark 💡). Be realistic but supportive." },
+  { id:"career", label:"転職・独立", prompt:"Discuss career transition from consulting to independent. Be supportive but realistic. After each message give 1 positive note + 1 language tip (mark 💡)." },
+  { id:"smalltalk", label:"雑談", prompt:"Casual small talk about lunch, weekend, Tokyo life. After each message note 1 great expression + 1 more natural alternative (mark 💡). Keep it light." },
+  { id:"presentation", label:"プレゼン", prompt:"Practice presenting business ideas. Ask the user to explain something from their work. Give 1 strength + 1 language improvement (mark 💡). Be encouraging." },
+];
+
+// STATE
+let selectedPhrases = [];
+let currentPhraseIdx = 0;
+let repCount = 0;
+let currentCat = 'all';
+let bCards = [];
+let activeSit = null;
+let currentTopic = TOPICS[0];
+let chatHistory = [];
+let stats = JSON.parse(localStorage.getItem('esp_stats3') || '{"streak":0,"sessions":0,"phrases":0}');
+
+// NAV
+function showScreen(id) {
+  const scroll = document.getElementById('scroll-area');
+  const chat = document.getElementById('screen-methodD');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  if (id === 'methodD') {
+    scroll.style.display = 'none';
+    chat.classList.add('active');
+    renderTopicBar();
+  } else {
+    scroll.style.display = '';
+    document.getElementById('screen-' + id).classList.add('active');
+    scroll.scrollTop = 0;
+  }
+  document.querySelectorAll('.nav-item').forEach((b,i) => {
+    b.classList.toggle('active', ['home','methodA','methodB','methodC','methodD'][i] === id);
+  });
+  if (id === 'methodA') renderFlashcards();
+  if (id === 'methodB') { if (!bCards.length) startMethodB(); else renderBCards(); }
+  if (id === 'methodC') renderSituations();
+}
+
+// STATS
+function updateStats() {
+  document.getElementById('stat-streak').textContent = stats.streak;
+  document.getElementById('stat-sessions').textContent = stats.sessions;
+  document.getElementById('stat-phrases').textContent = stats.phrases;
+}
+function saveStats() { localStorage.setItem('esp_stats3', JSON.stringify(stats)); updateStats(); }
+
+// METHOD A
+function renderFilterChips() {
+  document.getElementById('filter-row').innerHTML = CATS.map(c =>
+    `<button class="filter-chip ${currentCat===c.id?'active':''}" onclick="setCat('${c.id}')">${c.label}</button>`
+  ).join('');
+}
+function setCat(id) { currentCat = id; renderFlashcards(); }
+function renderFlashcards() {
+  renderFilterChips();
+  const list = currentCat === 'all' ? PHRASES : PHRASES.filter(p => p.cat === currentCat);
+  document.getElementById('flashcard-list').innerHTML = list.map(p => {
+    const idx = PHRASES.indexOf(p);
+    const sel = selectedPhrases.includes(idx);
+    return `<div class="flashcard ${sel?'selected':''}" onclick="togglePhrase(${idx})">
+      <div class="fc-check">✓</div>
+      <div style="flex:1">
+        <div class="fc-en">"${p.en}"</div>
+        <div class="fc-ja">${p.ja}</div>
+        <div class="fc-ctx"># ${p.ctx}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const btn = document.getElementById('practice-btn');
+  btn.disabled = selectedPhrases.length === 0;
+  btn.textContent = selectedPhrases.length > 0 ? `▶ PRACTICE (${selectedPhrases.length})` : '▶ PRACTICE';
+}
+function togglePhrase(idx) {
+  selectedPhrases = selectedPhrases.includes(idx) ? selectedPhrases.filter(i=>i!==idx) : [...selectedPhrases, idx];
+  renderFlashcards();
+}
+function selectRandom5() {
+  selectedPhrases = [...Array(PHRASES.length).keys()].sort(()=>Math.random()-0.5).slice(0,5);
+  currentCat = 'all';
+  renderFlashcards();
+}
+
+// PRACTICE MODAL
+function openPractice() {
+  if (!selectedPhrases.length) return;
+  currentPhraseIdx = 0; repCount = 0;
+  updatePracticeModal();
+  document.getElementById('practice-modal').classList.add('open');
+  stats.sessions++; saveStats();
+}
+function closePractice() { document.getElementById('practice-modal').classList.remove('open'); }
+function updatePracticeModal() {
+  const p = PHRASES[selectedPhrases[currentPhraseIdx]];
+  document.getElementById('pm-progress').textContent = `${currentPhraseIdx+1} / ${selectedPhrases.length}`;
+  document.getElementById('pm-phrase').textContent = `"${p.en}"`;
+  document.getElementById('pm-ja').textContent = p.ja;
+  document.getElementById('rep-num').textContent = repCount;
+  updateRing();
+}
+function updateRing() {
+  const pct = Math.min(repCount/10,1)*100;
+  const c = repCount>=10 ? 'var(--accent3)' : 'var(--accent)';
+  document.getElementById('rep-ring').style.background = `conic-gradient(${c} ${pct}%, var(--surface2) ${pct}%)`;
+  document.getElementById('rep-num').style.color = c;
+}
+function countRep() {
+  repCount = Math.min(repCount+1,10);
+  stats.phrases++; saveStats();
+  document.getElementById('rep-num').textContent = repCount;
+  updateRing();
+  if (repCount>=10) document.getElementById('pm-ja').textContent = '✓ Complete! 次のフレーズへ。';
+}
+function nextPhrase() {
+  currentPhraseIdx = (currentPhraseIdx+1) % selectedPhrases.length;
+  repCount = 0; updatePracticeModal();
+}
+
+// METHOD B
+function startMethodB() {
+  bCards = [...TRANSLATIONS].sort(()=>Math.random()-0.5);
+  stats.sessions++; saveStats(); renderBCards();
+}
+function shuffleB() { bCards = [...TRANSLATIONS].sort(()=>Math.random()-0.5); renderBCards(); }
+function renderBCards() {
+  document.getElementById('b-list').innerHTML = bCards.map((item,i) => `
+    <div class="b-card">
+      <div class="b-num"># ${i+1} / ${bCards.length}</div>
+      <div class="b-jp">${item.ja}</div>
+      <button class="btn btn-secondary" style="font-size:0.72rem;padding:9px 16px" onclick="revealB(${i})">REVEAL ANSWER</button>
+      <div class="b-answer" id="b-ans-${i}">${item.en}</div>
+    </div>
+  `).join('');
+}
+function revealB(i) {
+  document.getElementById('b-ans-'+i).classList.add('shown');
+  stats.phrases++; saveStats();
+}
+
+// METHOD C
+function renderSituations() {
+  document.getElementById('sit-list').innerHTML = SITUATIONS.map(s => `
+    <div class="sit-item ${activeSit===s.id?'active':''}" onclick="selectSit('${s.id}')">
+      <div class="sit-icon">${s.icon}</div>
+      <div style="flex:1"><div class="sit-name">${s.name}</div><div class="sit-desc">${s.desc}</div></div>
+      <div class="sit-arrow">${activeSit===s.id?'▾':'›'}</div>
+    </div>
+    ${activeSit===s.id ? s.phrases.map(p=>`
+      <div class="phrase-card">
+        <div class="phrase-en">"${p.en}"</div>
+        <div class="phrase-ja">${p.ja}</div>
+      </div>`).join('') : ''}
+  `).join('');
+}
+function selectSit(id) { activeSit = activeSit===id ? null : id; renderSituations(); }
+
+// METHOD D
+function renderTopicBar() {
+  document.getElementById('topic-bar').innerHTML = TOPICS.map(t =>
+    `<button class="topic-chip ${currentTopic.id===t.id?'active':''}" onclick="setTopic('${t.id}')">${t.label}</button>`
+  ).join('');
+}
+function setTopic(id) {
+  currentTopic = TOPICS.find(t=>t.id===id);
+  chatHistory = []; renderTopicBar();
+  document.getElementById('chat-msgs').innerHTML = `
+    <div class="msg ai"><div class="msg-av">AI</div>
+    <div class="msg-bub">Topic: <strong>${currentTopic.label}</strong>. Let's begin! 🚀</div></div>`;
+  stats.sessions++; saveStats();
+}
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.style.height = 'auto';
+  appendMsg('user', text);
+  chatHistory.push({ role:'user', content:text });
+  const loadId = appendLoading();
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        system:`You are an encouraging English speaking coach for a Japanese business professional (TOEIC 875, management consultant at a foreign firm in Tokyo, family of 3, wants business fluency). ${currentTopic.prompt} Be warm and concise, under 100 words including feedback.`,
+        messages:chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content.map(b=>b.text||'').join('');
+    removeLoading(loadId);
+    chatHistory.push({ role:'assistant', content:reply });
+    appendMsg('ai', reply);
+    stats.phrases++; saveStats();
+  } catch(e) {
+    removeLoading(loadId);
+    appendMsg('ai', 'Connection error. Please try again.');
+  }
+}
+function appendMsg(role, text) {
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML += `<div class="msg ${role}"><div class="msg-av">${role==='ai'?'AI':'YOU'}</div><div class="msg-bub">${text.replace(/\n/g,'<br>')}</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function appendLoading() {
+  const msgs = document.getElementById('chat-msgs');
+  const id = 'load-'+Date.now();
+  msgs.innerHTML += `<div class="msg ai" id="${id}"><div class="msg-av">AI</div><div class="msg-bub"><div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  return id;
+}
+function removeLoading(id) { const el=document.getElementById(id); if(el) el.remove(); }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+});
+
+updateStats();
+renderFlashcards();
+</script>
+</body>
+</html>

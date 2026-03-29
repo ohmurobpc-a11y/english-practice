@@ -143,6 +143,61 @@
   .rep-hint { font-size: 0.7rem; color: var(--text-dimmer); margin-bottom: 18px; }
   .pm-btn-row { display: flex; gap: 8px; margin-bottom: 10px; }
 
+  /* DASHBOARD */
+  .dash-section { margin-bottom: 24px; }
+  .dash-section-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-dimmer); letter-spacing: 0.1em; margin-bottom: 10px; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; }
+  .kpi-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 14px; }
+  .kpi-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.8rem; line-height: 1; margin-bottom: 4px; }
+  .kpi-lbl { font-size: 0.68rem; color: var(--text-dim); }
+  .kpi-sub { font-size: 0.62rem; color: var(--text-dimmer); margin-top: 2px; }
+
+  .streak-box { background: var(--surface); border: 1px solid rgba(124,106,255,0.3); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .streak-flame { font-size: 2rem; line-height: 1; }
+  .streak-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.4rem; color: var(--accent); line-height: 1; }
+  .streak-lbl { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+  .streak-best { font-size: 0.62rem; color: var(--text-dimmer); margin-top: 2px; }
+
+  /* CALENDAR HEATMAP */
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day { aspect-ratio: 1; border-radius: 4px; background: var(--surface2); position: relative; cursor: default; }
+  .cal-day.active-0 { background: var(--surface2); }
+  .cal-day.active-1 { background: rgba(124,106,255,0.25); }
+  .cal-day.active-2 { background: rgba(124,106,255,0.5); }
+  .cal-day.active-3 { background: rgba(124,106,255,0.75); }
+  .cal-day.active-4 { background: var(--accent); }
+  .cal-day.today { outline: 2px solid var(--accent3); outline-offset: 1px; }
+  .cal-weekday { font-family: 'DM Mono', monospace; font-size: 0.55rem; color: var(--text-dimmer); text-align: center; padding-bottom: 4px; }
+
+  /* BAR CHART */
+  .bar-chart { display: flex; align-items: flex-end; gap: 5px; height: 80px; padding: 0 2px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .bar-fill { width: 100%; border-radius: 4px 4px 0 0; background: var(--accent); opacity: 0.7; min-height: 2px; transition: height 0.4s ease; }
+  .bar-fill.today-bar { background: var(--accent3); opacity: 1; }
+  .bar-lbl { font-family: 'DM Mono', monospace; font-size: 0.5rem; color: var(--text-dimmer); }
+
+  /* CUMULATIVE LINE CHART (SVG) */
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .chart-wrap svg { width: 100%; display: block; }
+
+  /* METHOD BREAKDOWN */
+  .method-bar-row { display: flex; flex-direction: column; gap: 8px; }
+  .method-bar-item { display: flex; align-items: center; gap: 10px; }
+  .method-bar-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-dim); width: 60px; flex-shrink: 0; }
+  .method-bar-track { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .method-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .method-bar-count { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--text-dim); width: 28px; text-align: right; flex-shrink: 0; }
+
+  /* REPORT CARD */
+  .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 8px; }
+  .report-date { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--text-dimmer); margin-bottom: 8px; }
+  .report-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .report-row:last-child { border-bottom: none; }
+  .report-method { font-size: 0.78rem; color: var(--text); }
+  .report-count { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent); }
+  .report-empty { font-size: 0.78rem; color: var(--text-dimmer); text-align: center; padding: 20px 0; }
+
   /* METHOD B */
   .b-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 10px; }
   .b-num { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--text-dimmer); margin-bottom: 8px; }
@@ -279,6 +334,109 @@
     <div id="sit-list"></div>
   </div>
 
+  <!-- DASHBOARD -->
+  <div id="screen-dashboard" class="screen">
+    <div class="screen-title">Dashboard</div>
+    <div class="screen-desc">練習の積み上げを可視化。毎日続けた記録。</div>
+
+    <!-- STREAK -->
+    <div class="dash-section">
+      <div class="dash-section-title">STREAK</div>
+      <div class="streak-box">
+        <div class="streak-flame">🔥</div>
+        <div>
+          <div class="streak-num" id="db-streak">0</div>
+          <div class="streak-lbl">day streak</div>
+          <div class="streak-best" id="db-best">best: 0 days</div>
+        </div>
+        <div style="margin-left:auto; text-align:right;">
+          <div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:var(--text-dimmer);">TOTAL DAYS</div>
+          <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1.4rem; color:var(--text)" id="db-total-days">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="dash-section">
+      <div class="dash-section-title">ALL TIME</div>
+      <div class="kpi-grid">
+        <div class="kpi-box">
+          <div class="kpi-val" id="db-total-phrases" style="color:var(--accent)">0</div>
+          <div class="kpi-lbl">total phrases</div>
+          <div class="kpi-sub">発音・翻訳</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" id="db-total-sessions" style="color:var(--accent2)">0</div>
+          <div class="kpi-lbl">total sessions</div>
+          <div class="kpi-sub">練習セッション</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" id="db-today-phrases" style="color:var(--accent3)">0</div>
+          <div class="kpi-lbl">today phrases</div>
+          <div class="kpi-sub">今日の発音数</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" id="db-today-sessions" style="color:#ffcc64">0</div>
+          <div class="kpi-lbl">today sessions</div>
+          <div class="kpi-sub">今日のセッション</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR HEATMAP -->
+    <div class="dash-section">
+      <div class="dash-section-title">ACTIVITY CALENDAR — LAST 28 DAYS</div>
+      <div class="chart-wrap">
+        <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:4px;" id="cal-weekdays"></div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div style="display:flex; align-items:center; gap:6px; margin-top:10px; justify-content:flex-end;">
+          <span style="font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--text-dimmer);">少ない</span>
+          <div style="width:12px;height:12px;border-radius:2px;background:var(--surface2)"></div>
+          <div style="width:12px;height:12px;border-radius:2px;background:rgba(124,106,255,0.3)"></div>
+          <div style="width:12px;height:12px;border-radius:2px;background:rgba(124,106,255,0.6)"></div>
+          <div style="width:12px;height:12px;border-radius:2px;background:var(--accent)"></div>
+          <span style="font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--text-dimmer);">多い</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BAR CHART: daily activity (last 14 days) -->
+    <div class="dash-section">
+      <div class="dash-section-title">DAILY ACTIVITY — LAST 14 DAYS</div>
+      <div class="chart-wrap">
+        <div class="bar-chart" id="bar-chart"></div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;">
+          <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text-dim);display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent);display:inline-block"></span>SCRIPTS</span>
+          <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text-dim);display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#ffcc64;display:inline-block"></span>JP→EN</span>
+          <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text-dim);display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent2);display:inline-block"></span>LIVE</span>
+          <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text-dim);display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent3);display:inline-block"></span>AI CHAT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUMULATIVE LINE CHART -->
+    <div class="dash-section">
+      <div class="dash-section-title">CUMULATIVE PHRASES — ALL TIME</div>
+      <div class="chart-wrap">
+        <svg id="line-chart" viewBox="0 0 300 80" preserveAspectRatio="none" height="80"></svg>
+      </div>
+    </div>
+
+    <!-- METHOD BREAKDOWN -->
+    <div class="dash-section">
+      <div class="dash-section-title">METHOD BREAKDOWN — ALL TIME</div>
+      <div class="chart-wrap">
+        <div class="method-bar-row" id="method-breakdown"></div>
+      </div>
+    </div>
+
+    <!-- DAILY REPORTS -->
+    <div class="dash-section">
+      <div class="dash-section-title">DAILY REPORTS — RECENT 7 DAYS</div>
+      <div id="daily-reports"></div>
+    </div>
+  </div>
+
 </div><!-- /scroll-area -->
 
 <!-- METHOD D -->
@@ -321,6 +479,7 @@
   <button class="nav-item" onclick="showScreen('methodB')"><div class="nav-icon">🔄</div><div class="nav-label">JP→EN</div></button>
   <button class="nav-item" onclick="showScreen('methodC')"><div class="nav-icon">🎙️</div><div class="nav-label">LIVE</div></button>
   <button class="nav-item" onclick="showScreen('methodD')"><div class="nav-icon">💬</div><div class="nav-label">AI CHAT</div></button>
+  <button class="nav-item" onclick="showScreen('dashboard')"><div class="nav-icon">📊</div><div class="nav-label">STATS</div></button>
 </nav>
 
 <script>
@@ -530,23 +689,250 @@ function showScreen(id) {
     document.getElementById('screen-' + id).classList.add('active');
     scroll.scrollTop = 0;
   }
+  const navIds = ['home','methodA','methodB','methodC','methodD','dashboard'];
   document.querySelectorAll('.nav-item').forEach((b, i) => {
-    b.classList.toggle('active', ['home','methodA','methodB','methodC','methodD'][i] === id);
+    b.classList.toggle('active', navIds[i] === id);
   });
   if (id === 'methodA') renderFlashcards();
   if (id === 'methodB') { if (!bCards.length) startMethodB(); else renderBCards(); }
   if (id === 'methodC') renderSituations();
+  if (id === 'dashboard') renderDashboard();
 }
 
 // ============================================================
-// STATS
+// STATS & LOG SYSTEM
 // ============================================================
+// stats: simple counters (legacy, kept for home screen)
+// dailyLog: { "YYYY-MM-DD": { phrases: N, sessions: N, methodA: N, methodB: N, methodC: N, methodD: N } }
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function loadLog() {
+  try { return JSON.parse(localStorage.getItem('esp_log') || '{}'); } catch(e) { return {}; }
+}
+function saveLog(log) { localStorage.setItem('esp_log', JSON.stringify(log)); }
+
+function logActivity(type, method) {
+  // type: 'phrase' | 'session'
+  // method: 'A' | 'B' | 'C' | 'D'
+  const log = loadLog();
+  const key = todayKey();
+  if (!log[key]) log[key] = { phrases:0, sessions:0, A:0, B:0, C:0, D:0 };
+  if (type === 'phrase') { log[key].phrases++; log[key][method] = (log[key][method]||0) + 1; }
+  if (type === 'session') log[key].sessions++;
+  saveLog(log);
+  updateStreak();
+}
+
+function updateStreak() {
+  const log = loadLog();
+  const allKeys = Object.keys(log).sort();
+  if (!allKeys.length) { stats.streak = 0; saveStats(); return; }
+
+  // streak: count consecutive days with activity, starting from yesterday if today has none
+  const today = todayKey();
+  const todayActive = log[today] && (log[today].phrases > 0 || log[today].sessions > 0);
+  let streak = todayActive ? 1 : 0;
+  const startOffset = todayActive ? 1 : 0; // start checking from yesterday if today is empty
+
+  for (let i = 1; i < 365; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - (i + startOffset));
+    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (log[k] && (log[k].phrases > 0 || log[k].sessions > 0)) { streak++; }
+    else break;
+  }
+  stats.streak = streak;
+
+  // best streak calculation
+  let best = 0, cur = 0, prevKey = null;
+  for (const k of allKeys) {
+    const d = log[k];
+    if (d.phrases > 0 || d.sessions > 0) {
+      if (prevKey) {
+        const prev = new Date(prevKey), curr = new Date(k);
+        const diff = Math.round((curr - prev) / 86400000);
+        cur = diff === 1 ? cur + 1 : 1;
+      } else { cur = 1; }
+      best = Math.max(best, cur);
+      prevKey = k;
+    }
+  }
+  stats.bestStreak = Math.max(best, streak);
+  saveStats();
+}
+
 function updateStats() {
   document.getElementById('stat-streak').textContent = stats.streak;
   document.getElementById('stat-sessions').textContent = stats.sessions;
   document.getElementById('stat-phrases').textContent = stats.phrases;
 }
 function saveStats() { localStorage.setItem('esp_stats4', JSON.stringify(stats)); updateStats(); }
+
+// ============================================================
+// DASHBOARD RENDER
+// ============================================================
+function renderDashboard() {
+  const log = loadLog();
+  const allDates = Object.keys(log).sort();
+  const today = todayKey();
+  const todayData = log[today] || { phrases:0, sessions:0, A:0, B:0, C:0, D:0 };
+
+  // KPIs
+  const totalPhrases = allDates.reduce((s,k) => s + (log[k].phrases||0), 0);
+  const totalSessions = allDates.reduce((s,k) => s + (log[k].sessions||0), 0);
+  const activeDays = allDates.filter(k => (log[k].phrases||0) > 0 || (log[k].sessions||0) > 0).length;
+
+  document.getElementById('db-streak').textContent = stats.streak || 0;
+  document.getElementById('db-best').textContent = `best: ${stats.bestStreak || 0} days`;
+  document.getElementById('db-total-days').textContent = activeDays;
+  document.getElementById('db-total-phrases').textContent = totalPhrases;
+  document.getElementById('db-total-sessions').textContent = totalSessions;
+  document.getElementById('db-today-phrases').textContent = todayData.phrases || 0;
+  document.getElementById('db-today-sessions').textContent = todayData.sessions || 0;
+
+  renderCalendar(log);
+  renderBarChart(log);
+  renderLineChart(log);
+  renderMethodBreakdown(log);
+  renderDailyReports(log);
+}
+
+function getDateKey(daysAgo) {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function renderCalendar(log) {
+  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const wd = document.getElementById('cal-weekdays');
+  wd.innerHTML = weekdays.map(d => `<div class="cal-weekday">${d}</div>`).join('');
+
+  const today = new Date();
+  // start from 4 weeks ago Monday-aligned
+  const grid = document.getElementById('cal-grid');
+  const cells = [];
+  for (let i = 27; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const data = log[key];
+    const count = data ? (data.phrases || 0) : 0;
+    const level = count === 0 ? 0 : count < 5 ? 1 : count < 15 ? 2 : count < 30 ? 3 : 4;
+    const isToday = key === todayKey();
+    cells.push(`<div class="cal-day active-${level} ${isToday?'today':''}" title="${key}: ${count} phrases"></div>`);
+  }
+  grid.innerHTML = cells.join('');
+}
+
+function renderBarChart(log) {
+  const container = document.getElementById('bar-chart');
+  const days = 14;
+  const data = [];
+  for (let i = days-1; i >= 0; i--) {
+    const key = getDateKey(i);
+    const d = log[key] || { phrases:0, sessions:0, A:0, B:0, C:0, D:0 };
+    data.push({ key, A: d.A||0, B: d.B||0, C: d.C||0, D: d.D||0,
+      total: (d.A||0)+(d.B||0)+(d.C||0)+(d.D||0), isToday: i===0 });
+  }
+  const max = Math.max(...data.map(d => d.total), 1);
+  const METHOD_COLORS = { A:'var(--accent)', B:'#ffcc64', C:'var(--accent2)', D:'var(--accent3)' };
+
+  container.innerHTML = data.map(d => {
+    const mm = d.key.slice(5,7), dd = d.key.slice(8,10);
+    const label = `${parseInt(mm)}/${parseInt(dd)}`;
+    const segments = ['A','B','C','D'].map(m => {
+      if (!d[m]) return '';
+      const pct = (d[m] / max) * 100;
+      return `<div style="width:100%;height:${pct.toFixed(1)}%;background:${METHOD_COLORS[m]};opacity:${d.isToday?1:0.7};min-height:${d[m]>0?2:0}px;"></div>`;
+    }).reverse().join('');
+    return `<div class="bar-col">
+      <div class="bar-fill" style="height:${Math.round((d.total/max)*100)}%;background:transparent;display:flex;flex-direction:column;justify-content:flex-end;padding:0;border-radius:4px;overflow:hidden;">${segments}</div>
+      <div class="bar-lbl" style="color:${d.isToday?'var(--accent3)':'var(--text-dimmer)'}">${label}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderLineChart(log) {
+  const svg = document.getElementById('line-chart');
+  const allDates = Object.keys(log).sort();
+  if (allDates.length < 2) {
+    svg.innerHTML = `<text x="150" y="44" text-anchor="middle" font-size="10" fill="#40405a" font-family="DM Mono,monospace">練習データが増えると表示されます</text>`;
+    return;
+  }
+
+  // Build cumulative array
+  let cum = 0;
+  const points = allDates.map(k => { cum += (log[k].phrases || 0); return cum; });
+  const maxVal = Math.max(...points, 1);
+  const W = 300, H = 80, PAD = 8;
+  const xs = points.map((_, i) => PAD + (i / (points.length - 1)) * (W - PAD*2));
+  const ys = points.map(v => H - PAD - ((v / maxVal) * (H - PAD*2)));
+
+  const pathD = xs.map((x, i) => `${i===0?'M':'L'}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+  const areaD = pathD + ` L${xs[xs.length-1].toFixed(1)},${(H-PAD).toFixed(1)} L${PAD},${(H-PAD).toFixed(1)} Z`;
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#7c6aff" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="#7c6aff" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaD}" fill="url(#lg)"/>
+    <path d="${pathD}" fill="none" stroke="#7c6aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${xs[xs.length-1].toFixed(1)}" cy="${ys[ys.length-1].toFixed(1)}" r="3" fill="#6affa0"/>
+    <text x="${xs[xs.length-1].toFixed(1)}" y="${(ys[ys.length-1]-6).toFixed(1)}" text-anchor="middle" font-size="8" fill="#6affa0" font-family="DM Mono,monospace">${points[points.length-1]}</text>
+  `;
+}
+
+function renderMethodBreakdown(log) {
+  const totals = { A:0, B:0, C:0, D:0 };
+  Object.values(log).forEach(d => {
+    totals.A += d.A||0; totals.B += d.B||0; totals.C += d.C||0; totals.D += d.D||0;
+  });
+  const max = Math.max(...Object.values(totals), 1);
+  const methods = [
+    { key:'A', label:'SCRIPTS', color:'var(--accent)' },
+    { key:'B', label:'JP→EN',   color:'#ffcc64' },
+    { key:'C', label:'LIVE',    color:'var(--accent2)' },
+    { key:'D', label:'AI CHAT', color:'var(--accent3)' },
+  ];
+  document.getElementById('method-breakdown').innerHTML = methods.map(m => `
+    <div class="method-bar-item">
+      <div class="method-bar-label">${m.label}</div>
+      <div class="method-bar-track">
+        <div class="method-bar-fill" style="width:${Math.round((totals[m.key]/max)*100)}%; background:${m.color};"></div>
+      </div>
+      <div class="method-bar-count">${totals[m.key]}</div>
+    </div>
+  `).join('');
+}
+
+function renderDailyReports(log) {
+  const last7 = [];
+  for (let i = 0; i < 7; i++) last7.push(getDateKey(i));
+  const container = document.getElementById('daily-reports');
+  const cards = last7.map(key => {
+    const d = log[key];
+    if (!d || (d.phrases === 0 && d.sessions === 0)) return null;
+    const label = key === todayKey() ? 'Today' : key === getDateKey(1) ? 'Yesterday' : key;
+    return `<div class="report-card">
+      <div class="report-date">${label} — ${key}</div>
+      <div class="report-row"><span class="report-method">📝 Phrases spoken</span><span class="report-count">${d.phrases||0}</span></div>
+      <div class="report-row"><span class="report-method">⚡ Sessions</span><span class="report-count">${d.sessions||0}</span></div>
+      ${(d.A||0)>0 ? `<div class="report-row"><span class="report-method">🗂️ Scripts</span><span class="report-count">${d.A}</span></div>` : ''}
+      ${(d.B||0)>0 ? `<div class="report-row"><span class="report-method">🔄 JP→EN</span><span class="report-count">${d.B}</span></div>` : ''}
+      ${(d.C||0)>0 ? `<div class="report-row"><span class="report-method">🎙️ Commentary</span><span class="report-count">${d.C}</span></div>` : ''}
+      ${(d.D||0)>0 ? `<div class="report-row"><span class="report-method">💬 AI Chat</span><span class="report-count">${d.D}</span></div>` : ''}
+    </div>`;
+  }).filter(Boolean);
+  container.innerHTML = cards.length ? cards.join('') : `<div class="report-empty">まだ記録がありません。練習を始めると表示されます。</div>`;
+}
 
 // ============================================================
 // METHOD A
@@ -599,6 +985,7 @@ function openPractice() {
   currentPhraseIdx = 0; repCount = 0;
   updatePracticeModal();
   document.getElementById('practice-modal').classList.add('open');
+  logActivity('session', 'A');
   stats.sessions++; saveStats();
 }
 function closePractice() {
@@ -627,6 +1014,7 @@ function updateRing() {
 }
 function countRep() {
   repCount = Math.min(repCount+1, 10);
+  logActivity('phrase', 'A');
   stats.phrases++; saveStats();
   document.getElementById('rep-num').textContent = repCount;
   updateRing();
@@ -643,6 +1031,7 @@ function nextPhrase() {
 // ============================================================
 function startMethodB() {
   bCards = [...TRANSLATIONS].sort(()=>Math.random()-0.5);
+  logActivity('session', 'B');
   stats.sessions++; saveStats(); renderBCards();
 }
 function shuffleB() { bCards = [...TRANSLATIONS].sort(()=>Math.random()-0.5); renderBCards(); }
@@ -663,6 +1052,7 @@ function renderBCards() {
 function revealB(i) {
   const el = document.getElementById('b-ans-'+i);
   el.classList.add('shown');
+  logActivity('phrase', 'B');
   stats.phrases++; saveStats();
 }
 
@@ -704,6 +1094,7 @@ function setTopic(id) {
     <div class="msg-right">
       <div class="msg-bub">Topic: <strong>${currentTopic.label}</strong>. Let's begin! I'll give gentle feedback after each message. 🚀</div>
     </div></div>`;
+  logActivity('session', 'D');
   stats.sessions++; saveStats();
 }
 
@@ -730,6 +1121,7 @@ async function sendChat() {
     removeLoading(loadId);
     chatHistory.push({role:'assistant', content:reply});
     appendMsg('ai', reply);
+    logActivity('phrase', 'D');
     stats.phrases++; saveStats();
   } catch(e) {
     removeLoading(loadId);
@@ -767,6 +1159,7 @@ document.getElementById('chat-input').addEventListener('keydown', e => {
 // ============================================================
 // INIT
 // ============================================================
+updateStreak();
 updateStats();
 renderFlashcards();
 </script>

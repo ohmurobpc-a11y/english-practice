@@ -1,1167 +1,521 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0a0a0f">
-<title>English Speaking Practice</title>
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{max-width:680px;margin:0 auto;padding:1.5rem 1rem;font-family:var(--font-sans);}
+.tab-bar{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);}
+.tab{padding:8px 16px;font-size:14px;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;border-top:none;border-left:none;border-right:none;}
+.tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary);font-weight:500;}
+.screen{display:none;}.screen.active{display:block;}
 
-  :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c26;
-    --border: #2a2a38;
-    --accent: #7c6aff;
-    --accent2: #ff6a6a;
-    --accent3: #6affa0;
-    --text: #e8e8f0;
-    --text-dim: #7070a0;
-    --text-dimmer: #40405a;
-    --nav-h: 64px;
-    --header-h: 54px;
-  }
+/* Today status bar */
+.today-bar{border-radius:var(--border-radius-lg);padding:14px 18px;margin-bottom:1.25rem;display:flex;align-items:center;gap:14px;}
+.today-bar.ok{background:#E1F5EE;border:0.5px solid #5DCAA5;}
+.today-bar.ng{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);}
+.today-icon{font-size:22px;flex-shrink:0;}
+.today-text{flex:1;}
+.today-title{font-size:14px;font-weight:500;color:var(--color-text-primary);}
+.today-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; overflow: hidden; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
+/* XP / Level */
+.level-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem;}
+.level-badge{background:var(--color-text-primary);color:var(--color-background-primary);border-radius:var(--border-radius-md);padding:4px 12px;font-size:13px;font-weight:500;white-space:nowrap;}
+.xp-wrap{flex:1;}
+.xp-label{display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
+.xp-bar-bg{background:var(--color-background-secondary);border-radius:4px;height:6px;overflow:hidden;}
+.xp-bar-fill{height:100%;background:#534AB7;border-radius:4px;transition:width 0.5s;}
 
-  header {
-    height: var(--header-h);
-    padding: 0 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-    background: var(--surface);
-    flex-shrink: 0;
-  }
-  header h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: 0.04em; }
-  header h1 span { color: var(--accent); }
-  .badge { font-family: 'DM Mono', monospace; font-size: 0.58rem; background: rgba(124,106,255,0.15); color: var(--accent); border: 1px solid rgba(124,106,255,0.3); padding: 3px 7px; border-radius: 4px; letter-spacing: 0.08em; }
-  .header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-  .speed-btn { font-family: 'DM Mono', monospace; font-size: 0.6rem; background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); padding: 4px 8px; border-radius: 6px; cursor: pointer; }
-  .speed-btn.active { border-color: var(--accent); color: var(--accent); }
+/* Daily goals */
+.goals-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:1.25rem;}
+.goal-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px;text-align:center;}
+.goal-card.done{border-color:#5DCAA5;background:#E1F5EE;}
+.goal-num{font-size:20px;font-weight:500;color:var(--color-text-primary);}
+.goal-num span{font-size:13px;font-weight:400;color:var(--color-text-secondary);}
+.goal-label{font-size:11px;color:var(--color-text-secondary);margin-top:3px;}
+.goal-prog{font-size:18px;margin-top:4px;}
 
-  .scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 18px 16px calc(var(--nav-h) + 18px); }
-  .scroll-area::-webkit-scrollbar { display: none; }
+/* Ring progress */
+.ring-wrap{display:flex;justify-content:center;margin-bottom:1.25rem;}
+.ring-outer{position:relative;width:110px;height:110px;}
+.ring-outer svg{transform:rotate(-90deg);}
+.ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.ring-pct{font-size:22px;font-weight:500;color:var(--color-text-primary);}
+.ring-lbl{font-size:11px;color:var(--color-text-secondary);}
 
-  .screen { display: none; animation: fadeUp 0.22s ease; }
-  .screen.active { display: block; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* Category + phrase */
+.category-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.cat-btn{padding:5px 12px;font-size:13px;border:0.5px solid var(--color-border-secondary);border-radius:20px;cursor:pointer;background:transparent;color:var(--color-text-secondary);}
+.cat-btn.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary);}
+.nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.progress-text{font-size:13px;color:var(--color-text-secondary);}
+.phrase-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem;margin-bottom:1rem;}
+.phrase-label{font-size:12px;color:var(--color-text-tertiary);margin-bottom:8px;}
+.phrase-en{font-size:19px;font-weight:500;color:var(--color-text-primary);line-height:1.4;margin-bottom:6px;}
+.phrase-ja{font-size:14px;color:var(--color-text-secondary);margin-bottom:1.25rem;}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.btn{padding:8px 14px;font-size:14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;background:transparent;color:var(--color-text-primary);display:flex;align-items:center;gap:5px;}
+.btn:hover{background:var(--color-background-secondary);}
+.btn.primary{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary);}
+.btn.primary:hover{opacity:0.85;}
+.btn.success{background:#1D9E75;color:#fff;border-color:#1D9E75;}
+.btn.recording{background:#E24B4A;color:#fff;border-color:#E24B4A;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}
+.tip-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 16px;font-size:13px;color:var(--color-text-secondary);line-height:1.6;}
+.feedback-area{min-height:36px;display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--color-text-secondary);}
 
-  .screen-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem; margin-bottom: 4px; }
-  .screen-desc { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 18px; line-height: 1.6; }
+/* Toast */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--color-text-primary);color:var(--color-background-primary);padding:10px 20px;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;transition:transform 0.35s;z-index:999;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
 
-  .bottom-nav {
-    height: var(--nav-h);
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    position: fixed; bottom: 0; left: 0; right: 0;
-    z-index: 100;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; border: none; background: transparent; color: var(--text-dimmer); }
-  .nav-item.active { color: var(--accent); }
-  .nav-icon { font-size: 1.2rem; line-height: 1; }
-  .nav-label { font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.04em; }
-
-  /* HOME */
-  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 20px; }
-  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 8px; text-align: center; }
-  .stat-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.6rem; color: var(--accent); }
-  .stat-lbl { font-size: 0.62rem; color: var(--text-dim); margin-top: 2px; }
-
-  .method-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: transform 0.1s; }
-  .method-card:active { transform: scale(0.98); }
-  .method-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-  .method-card h3 { font-size: 0.88rem; font-weight: 600; margin-bottom: 2px; }
-  .method-card p { font-size: 0.74rem; color: var(--text-dim); line-height: 1.4; }
-  .method-arrow { margin-left: auto; color: var(--text-dimmer); font-size: 1.1rem; }
-
-  .tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; letter-spacing: 0.06em; }
-  .tag-a { background: rgba(124,106,255,0.15); color: var(--accent); border: 1px solid rgba(124,106,255,0.25); }
-  .tag-b { background: rgba(255,200,100,0.15); color: #ffcc64; border: 1px solid rgba(255,200,100,0.25); }
-  .tag-c { background: rgba(255,106,106,0.15); color: var(--accent2); border: 1px solid rgba(255,106,106,0.25); }
-  .tag-d { background: rgba(106,255,160,0.15); color: var(--accent3); border: 1px solid rgba(106,255,160,0.25); }
-
-  /* TTS BUTTON */
-  .tts-btn {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-dim);
-    cursor: pointer;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-    transition: all 0.15s;
-  }
-  .tts-btn:active, .tts-btn.playing { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(0.95); }
-  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(124,106,255,0.4)} 50%{box-shadow:0 0 0 6px rgba(124,106,255,0)} }
-  .tts-btn.playing { animation: pulse 1s infinite; }
-
-  /* METHOD A */
-  .filter-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 12px; }
-  .filter-row::-webkit-scrollbar { display: none; }
-  .filter-chip { font-family: 'DM Mono', monospace; font-size: 0.66rem; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; white-space: nowrap; }
-  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-
-  .flashcard { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; transition: transform 0.1s; }
-  .flashcard:active { transform: scale(0.99); }
-  .flashcard.selected { border-color: var(--accent); background: rgba(124,106,255,0.08); }
-  .fc-check { width: 22px; height: 22px; min-width: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; color: transparent; margin-top: 2px; cursor: pointer; }
-  .flashcard.selected .fc-check { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .fc-body { flex: 1; min-width: 0; cursor: pointer; }
-  .fc-en { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--text); line-height: 1.5; margin-bottom: 4px; }
-  .fc-ja { font-size: 0.73rem; color: var(--text-dim); }
-  .fc-ctx { font-size: 0.6rem; color: var(--text-dimmer); margin-top: 3px; font-family: 'DM Mono', monospace; }
-
-  .btn-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-  .btn { font-family: 'DM Mono', monospace; font-size: 0.74rem; letter-spacing: 0.05em; padding: 11px 18px; border-radius: 10px; border: none; cursor: pointer; transition: transform 0.1s; }
-  .btn:active { transform: scale(0.96); }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-green { background: rgba(106,255,160,0.15); color: var(--accent3); border: 1px solid rgba(106,255,160,0.3); }
-  .btn:disabled { opacity: 0.4; cursor: default; }
-
-  /* PRACTICE MODAL */
-  .practice-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-  .practice-modal.open { display: flex; animation: fadeUp 0.2s; }
-  .practice-inner { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 26px 22px; width: 100%; max-width: 400px; text-align: center; }
-  .pm-progress { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--text-dimmer); letter-spacing: 0.1em; margin-bottom: 14px; text-align: left; }
-  .pm-phrase { font-family: 'DM Mono', monospace; font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 6px; cursor: pointer; }
-  .pm-phrase:active { opacity: 0.7; }
-  .pm-ja { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; }
-  .pm-tap-hint { font-size: 0.68rem; color: var(--text-dimmer); margin-bottom: 18px; }
-  .rep-ring { width: 86px; height: 86px; border-radius: 50%; background: conic-gradient(var(--accent) 0%, var(--surface2) 0%); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; position: relative; }
-  .rep-ring::before { content: ''; position: absolute; inset: 8px; background: var(--surface); border-radius: 50%; }
-  .rep-num { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.7rem; color: var(--accent); position: relative; z-index: 1; }
-  .rep-hint { font-size: 0.7rem; color: var(--text-dimmer); margin-bottom: 18px; }
-  .pm-btn-row { display: flex; gap: 8px; margin-bottom: 10px; }
-
-  /* DASHBOARD */
-  .dash-section { margin-bottom: 24px; }
-  .dash-section-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-dimmer); letter-spacing: 0.1em; margin-bottom: 10px; }
-
-  .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; }
-  .kpi-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 14px; }
-  .kpi-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.8rem; line-height: 1; margin-bottom: 4px; }
-  .kpi-lbl { font-size: 0.68rem; color: var(--text-dim); }
-  .kpi-sub { font-size: 0.62rem; color: var(--text-dimmer); margin-top: 2px; }
-
-  .streak-box { background: var(--surface); border: 1px solid rgba(124,106,255,0.3); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
-  .streak-flame { font-size: 2rem; line-height: 1; }
-  .streak-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.4rem; color: var(--accent); line-height: 1; }
-  .streak-lbl { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
-  .streak-best { font-size: 0.62rem; color: var(--text-dimmer); margin-top: 2px; }
-
-  /* CALENDAR HEATMAP */
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .cal-day { aspect-ratio: 1; border-radius: 4px; background: var(--surface2); position: relative; cursor: default; }
-  .cal-day.active-0 { background: var(--surface2); }
-  .cal-day.active-1 { background: rgba(124,106,255,0.25); }
-  .cal-day.active-2 { background: rgba(124,106,255,0.5); }
-  .cal-day.active-3 { background: rgba(124,106,255,0.75); }
-  .cal-day.active-4 { background: var(--accent); }
-  .cal-day.today { outline: 2px solid var(--accent3); outline-offset: 1px; }
-  .cal-weekday { font-family: 'DM Mono', monospace; font-size: 0.55rem; color: var(--text-dimmer); text-align: center; padding-bottom: 4px; }
-
-  /* BAR CHART */
-  .bar-chart { display: flex; align-items: flex-end; gap: 5px; height: 80px; padding: 0 2px; }
-  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-  .bar-fill { width: 100%; border-radius: 4px 4px 0 0; background: var(--accent); opacity: 0.7; min-height: 2px; transition: height 0.4s ease; }
-  .bar-fill.today-bar { background: var(--accent3); opacity: 1; }
-  .bar-lbl { font-family: 'DM Mono', monospace; font-size: 0.5rem; color: var(--text-dimmer); }
-
-  /* CUMULATIVE LINE CHART (SVG) */
-  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
-  .chart-wrap svg { width: 100%; display: block; }
-
-  /* METHOD BREAKDOWN */
-  .method-bar-row { display: flex; flex-direction: column; gap: 8px; }
-  .method-bar-item { display: flex; align-items: center; gap: 10px; }
-  .method-bar-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-dim); width: 60px; flex-shrink: 0; }
-  .method-bar-track { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
-  .method-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-  .method-bar-count { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--text-dim); width: 28px; text-align: right; flex-shrink: 0; }
-
-  /* REPORT CARD */
-  .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 8px; }
-  .report-date { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--text-dimmer); margin-bottom: 8px; }
-  .report-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); }
-  .report-row:last-child { border-bottom: none; }
-  .report-method { font-size: 0.78rem; color: var(--text); }
-  .report-count { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent); }
-  .report-empty { font-size: 0.78rem; color: var(--text-dimmer); text-align: center; padding: 20px 0; }
-
-  /* METHOD B */
-  .b-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 10px; }
-  .b-num { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--text-dimmer); margin-bottom: 8px; }
-  .b-jp { font-size: 1.05rem; color: var(--text); margin-bottom: 12px; line-height: 1.6; }
-  .b-answer { background: rgba(106,255,160,0.06); border: 1px solid rgba(106,255,160,0.2); border-radius: 8px; padding: 11px 14px; font-family: 'DM Mono', monospace; font-size: 0.86rem; color: var(--accent3); display: none; margin-top: 10px; animation: fadeUp 0.2s; }
-  .b-answer.shown { display: flex; align-items: center; gap: 10px; }
-  .b-answer-text { flex: 1; }
-
-  /* METHOD C */
-  .sit-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 15px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: transform 0.1s; }
-  .sit-item:active { transform: scale(0.98); }
-  .sit-item.active { border-color: var(--accent2); background: rgba(255,106,106,0.06); }
-  .sit-icon { font-size: 1.3rem; }
-  .sit-name { font-size: 0.88rem; font-weight: 500; }
-  .sit-desc { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
-  .sit-arrow { margin-left: auto; color: var(--text-dimmer); font-size: 1rem; }
-  .phrase-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 6px; margin-left: 12px; display: flex; align-items: center; gap: 10px; }
-  .phrase-texts { flex: 1; min-width: 0; }
-  .phrase-en { font-family: 'DM Mono', monospace; font-size: 0.86rem; color: var(--accent3); margin-bottom: 3px; line-height: 1.5; }
-  .phrase-ja { font-size: 0.74rem; color: var(--text-dim); }
-
-  /* METHOD D */
-  #screen-methodD { height: calc(100vh - var(--header-h) - var(--nav-h)); display: none; flex-direction: column; }
-  #screen-methodD.active { display: flex; }
-  .topic-scroll { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-  .topic-scroll::-webkit-scrollbar { display: none; }
-  .topic-chip { font-family: 'DM Mono', monospace; font-size: 0.66rem; padding: 7px 13px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; white-space: nowrap; }
-  .topic-chip.active { background: var(--accent2); border-color: var(--accent2); color: #fff; }
-  .chat-msgs { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
-  .chat-msgs::-webkit-scrollbar { display: none; }
-  .msg { display: flex; gap: 8px; animation: fadeUp 0.2s; }
-  .msg.user { flex-direction: row-reverse; }
-  .msg-av { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 0.6rem; flex-shrink: 0; }
-  .msg.ai .msg-av { background: rgba(124,106,255,0.2); color: var(--accent); border: 1px solid rgba(124,106,255,0.3); }
-  .msg.user .msg-av { background: rgba(255,106,106,0.2); color: var(--accent2); border: 1px solid rgba(255,106,106,0.3); }
-  .msg-right { max-width: 82%; display: flex; flex-direction: column; gap: 4px; }
-  .msg.user .msg-right { align-items: flex-end; }
-  .msg-bub { padding: 10px 13px; border-radius: 14px; font-size: 0.86rem; line-height: 1.6; }
-  .msg.ai .msg-bub { background: var(--surface2); border: 1px solid var(--border); }
-  .msg.user .msg-bub { background: rgba(255,106,106,0.1); border: 1px solid rgba(255,106,106,0.2); }
-  .msg-tts { align-self: flex-start; }
-  .chat-input-row { display: flex; gap: 8px; padding: 10px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; align-items: flex-end; }
-  .chat-textarea { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; padding: 10px 15px; outline: none; resize: none; max-height: 100px; line-height: 1.4; -webkit-appearance: none; }
-  .chat-textarea:focus { border-color: var(--accent); }
-  .chat-textarea::placeholder { color: var(--text-dimmer); }
-  .send-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); border: none; color: #fff; font-size: 1.1rem; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-  .send-btn:active { transform: scale(0.92); }
-
-  .dots { display: flex; gap: 5px; }
-  .dots span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: bounce 1.2s infinite; }
-  .dots span:nth-child(2) { animation-delay: 0.2s; }
-  .dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
-
-  /* TTS notice banner */
-  .tts-notice { background: rgba(124,106,255,0.1); border: 1px solid rgba(124,106,255,0.25); border-radius: 10px; padding: 10px 14px; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+/* Dashboard */
+.stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.5rem;}
+.stat-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;}
+.stat-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
+.stat-value{font-size:22px;font-weight:500;color:var(--color-text-primary);}
+.stat-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;}
+.section-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:12px;}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-bottom:1.5rem;}
+.cal-day-label{font-size:11px;color:var(--color-text-tertiary);text-align:center;padding:2px 0;}
+.cal-day{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--color-text-tertiary);background:var(--color-background-secondary);}
+.cal-day.ok{background:#1D9E75;color:#fff;font-weight:500;}
+.cal-day.partial{background:#9FE1CB;color:#085041;}
+.cal-day.today{outline:2px solid var(--color-text-primary);outline-offset:1px;}
+.cal-day.empty{background:transparent;}
+.progress-bar-wrap{background:var(--color-background-secondary);border-radius:4px;height:6px;margin-bottom:1.25rem;overflow:hidden;}
+.progress-bar-fill{height:100%;background:#1D9E75;border-radius:4px;transition:width 0.4s;}
+.phrase-list{display:flex;flex-direction:column;gap:6px;}
+.phrase-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px;}
+.phrase-item .check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--color-border-secondary);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.phrase-item.done .check{background:#1D9E75;border-color:#1D9E75;color:#fff;}
+.phrase-item .ptext{color:var(--color-text-primary);flex:1;}
+.phrase-item.done .ptext{color:var(--color-text-secondary);}
+.phrase-item .ptag{font-size:11px;color:var(--color-text-tertiary);}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;}
+.badge{padding:5px 12px;border-radius:20px;font-size:12px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);background:var(--color-background-secondary);}
+.badge.earned{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489;}
 </style>
-</head>
-<body>
 
-<header>
-  <h1>ENGLISH <span>SPEAKING</span></h1>
-  <div class="badge">PRACTICE</div>
-  <div class="header-right">
-    <button class="speed-btn active" onclick="setSpeed(0.85)" id="spd-slow">SLOW</button>
-    <button class="speed-btn" onclick="setSpeed(1.0)" id="spd-normal">NORMAL</button>
-  </div>
-</header>
+<div class="toast" id="toast"></div>
 
-<div class="scroll-area" id="scroll-area">
-
-  <!-- HOME -->
-  <div id="screen-home" class="screen active">
-    <div class="screen-title">Today's Practice</div>
-    <div class="screen-desc">4つのメソッドで話す回路を作る。</div>
-    <div class="tts-notice">🔊 A・Bのフレーズの🔊ボタンをタップすると発音します。スピード切替はヘッダーで。</div>
-    <div class="stats-row">
-      <div class="stat-box"><div class="stat-val" id="stat-streak">0</div><div class="stat-lbl">streak</div></div>
-      <div class="stat-box"><div class="stat-val" id="stat-sessions">0</div><div class="stat-lbl">sessions</div></div>
-      <div class="stat-box"><div class="stat-val" id="stat-phrases">0</div><div class="stat-lbl">phrases</div></div>
-    </div>
-    <div class="method-card" onclick="showScreen('methodA')">
-      <div class="method-icon" style="background:rgba(124,106,255,0.15)">🗂️</div>
-      <div><h3>A / Script Cards</h3><p>状況別フレーズを選んで暗唱練習</p></div>
-      <div class="method-arrow">›</div>
-    </div>
-    <div class="method-card" onclick="showScreen('methodB')">
-      <div class="method-icon" style="background:rgba(255,200,100,0.15)">🔄</div>
-      <div><h3>B / JP → EN Replace</h3><p>日本語を見て即座に英語に変換</p></div>
-      <div class="method-arrow">›</div>
-    </div>
-    <div class="method-card" onclick="showScreen('methodC')">
-      <div class="method-icon" style="background:rgba(255,106,106,0.15)">🎙️</div>
-      <div><h3>C / Commentary</h3><p>状況別・実況中継フレーズ集</p></div>
-      <div class="method-arrow">›</div>
-    </div>
-    <div class="method-card" onclick="showScreen('methodD')">
-      <div class="method-icon" style="background:rgba(106,255,160,0.15)">💬</div>
-      <div><h3>D / AI Chat</h3><p>AIと英語で会話練習・フィードバックあり</p></div>
-      <div class="method-arrow">›</div>
-    </div>
+<div class="app">
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('practice')">練習</button>
+    <button class="tab" onclick="switchTab('dashboard')">ダッシュボード</button>
   </div>
 
-  <!-- METHOD A -->
-  <div id="screen-methodA" class="screen">
-    <div class="tag tag-a">METHOD A</div>
-    <div class="screen-title">Script Cards</div>
-    <div class="screen-desc">🔊をタップして発音確認。チェックで選択してPRACTICEへ。</div>
-    <div class="filter-row" id="filter-row"></div>
-    <div class="btn-row">
-      <button class="btn btn-secondary" onclick="selectRandom5()">🎲 RANDOM 5</button>
-      <button class="btn btn-primary" id="practice-btn" onclick="openPractice()" disabled>▶ PRACTICE</button>
+  <!-- PRACTICE -->
+  <div id="screen-practice" class="screen active">
+    <div class="today-bar ng" id="today-bar">
+      <div class="today-icon" id="today-icon">○</div>
+      <div class="today-text">
+        <div class="today-title" id="today-title">今日のノルマ未達成</div>
+        <div class="today-sub" id="today-sub">練習3回・習得1フレーズでクリア</div>
+      </div>
     </div>
-    <div id="flashcard-list"></div>
-  </div>
 
-  <!-- METHOD B -->
-  <div id="screen-methodB" class="screen">
-    <div class="tag tag-b">METHOD B</div>
-    <div class="screen-title">JP → EN Replace</div>
-    <div class="screen-desc">日本語を見て英語を声に出す。REVEALで答えを確認、🔊で発音チェック。</div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="startMethodB()">▶ START</button>
-      <button class="btn btn-secondary" onclick="shuffleB()">🔀 SHUFFLE</button>
+    <div class="level-row">
+      <div class="level-badge" id="level-badge">Lv.1</div>
+      <div class="xp-wrap">
+        <div class="xp-label"><span id="xp-label-text">XP: 0 / 100</span><span id="xp-next-label">次のレベルまで</span></div>
+        <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-bar" style="width:0%"></div></div>
+      </div>
     </div>
-    <div id="b-list"></div>
-  </div>
 
-  <!-- METHOD C -->
-  <div id="screen-methodC" class="screen">
-    <div class="tag tag-c">METHOD C</div>
-    <div class="screen-title">Running Commentary</div>
-    <div class="screen-desc">状況をタップして開く。🔊で発音確認してから声に出す。</div>
-    <div id="sit-list"></div>
+    <div class="goals-grid">
+      <div class="goal-card" id="goal-listen">
+        <div class="goal-prog" id="goal-listen-prog">○○○</div>
+        <div class="goal-num"><span id="goal-listen-n">0</span><span> / 3</span></div>
+        <div class="goal-label">聞く</div>
+      </div>
+      <div class="goal-card" id="goal-record">
+        <div class="goal-prog" id="goal-record-prog">○○</div>
+        <div class="goal-num"><span id="goal-record-n">0</span><span> / 2</span></div>
+        <div class="goal-label">録音練習</div>
+      </div>
+      <div class="goal-card" id="goal-done">
+        <div class="goal-prog" id="goal-done-prog">○</div>
+        <div class="goal-num"><span id="goal-done-n">0</span><span> / 1</span></div>
+        <div class="goal-label">習得</div>
+      </div>
+    </div>
+
+    <div class="category-row" id="cat-row"></div>
+    <div class="nav-row">
+      <span class="progress-text" id="progress-text"></span>
+      <div style="display:flex;gap:6px;">
+        <button class="btn" onclick="prevPhrase()">← 前へ</button>
+        <button class="btn" onclick="nextPhrase()">次へ →</button>
+      </div>
+    </div>
+    <div class="phrase-card">
+      <div class="phrase-label" id="phrase-cat"></div>
+      <div class="phrase-en" id="phrase-en"></div>
+      <div class="phrase-ja" id="phrase-ja"></div>
+      <div class="actions">
+        <button class="btn primary" onclick="speakPhrase()">▶ 聞く</button>
+        <button class="btn" id="rec-btn" onclick="toggleRecord()">● 録音練習</button>
+        <button class="btn success" id="done-btn" onclick="markDone()">✓ できた</button>
+      </div>
+      <div class="feedback-area" id="feedback-area"></div>
+    </div>
+    <div class="tip-box" id="tip-box"></div>
   </div>
 
   <!-- DASHBOARD -->
   <div id="screen-dashboard" class="screen">
-    <div class="screen-title">Dashboard</div>
-    <div class="screen-desc">練習の積み上げを可視化。毎日続けた記録。</div>
-
-    <!-- STREAK -->
-    <div class="dash-section">
-      <div class="dash-section-title">STREAK</div>
-      <div class="streak-box">
-        <div class="streak-flame">🔥</div>
-        <div>
-          <div class="streak-num" id="db-streak">0</div>
-          <div class="streak-lbl">day streak</div>
-          <div class="streak-best" id="db-best">best: 0 days</div>
-        </div>
-        <div style="margin-left:auto; text-align:right;">
-          <div style="font-family:'DM Mono',monospace; font-size:0.62rem; color:var(--text-dimmer);">TOTAL DAYS</div>
-          <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1.4rem; color:var(--text)" id="db-total-days">0</div>
-        </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">総練習日数</div>
+        <div class="stat-value" id="stat-days">0</div>
+        <div class="stat-sub">日</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">習得フレーズ</div>
+        <div class="stat-value" id="stat-phrases">0</div>
+        <div class="stat-sub">/ 20</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">連続練習</div>
+        <div class="stat-value" id="stat-streak">0</div>
+        <div class="stat-sub">日連続</div>
       </div>
     </div>
 
-    <!-- KPIs -->
-    <div class="dash-section">
-      <div class="dash-section-title">ALL TIME</div>
-      <div class="kpi-grid">
-        <div class="kpi-box">
-          <div class="kpi-val" id="db-total-phrases" style="color:var(--accent)">0</div>
-          <div class="kpi-lbl">total phrases</div>
-          <div class="kpi-sub">発音・翻訳</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-val" id="db-total-sessions" style="color:var(--accent2)">0</div>
-          <div class="kpi-lbl">total sessions</div>
-          <div class="kpi-sub">練習セッション</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-val" id="db-today-phrases" style="color:var(--accent3)">0</div>
-          <div class="kpi-lbl">today phrases</div>
-          <div class="kpi-sub">今日の発音数</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-val" id="db-today-sessions" style="color:#ffcc64">0</div>
-          <div class="kpi-lbl">today sessions</div>
-          <div class="kpi-sub">今日のセッション</div>
-        </div>
-      </div>
-    </div>
+    <div class="section-title">獲得バッジ</div>
+    <div class="badge-row" id="badge-row"></div>
 
-    <!-- CALENDAR HEATMAP -->
-    <div class="dash-section">
-      <div class="dash-section-title">ACTIVITY CALENDAR — LAST 28 DAYS</div>
-      <div class="chart-wrap">
-        <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:4px;" id="cal-weekdays"></div>
-        <div class="cal-grid" id="cal-grid"></div>
-        <div style="display:flex; align-items:center; gap:6px; margin-top:10px; justify-content:flex-end;">
-          <span style="font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--text-dimmer);">少ない</span>
-          <div style="width:12px;height:12px;border-radius:2px;background:var(--surface2)"></div>
-          <div style="width:12px;height:12px;border-radius:2px;background:rgba(124,106,255,0.3)"></div>
-          <div style="width:12px;height:12px;border-radius:2px;background:rgba(124,106,255,0.6)"></div>
-          <div style="width:12px;height:12px;border-radius:2px;background:var(--accent)"></div>
-          <span style="font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--text-dimmer);">多い</span>
-        </div>
-      </div>
-    </div>
+    <div class="section-title">今月の練習カレンダー</div>
+    <div class="calendar-grid" id="calendar"></div>
 
-    <!-- BAR CHART: daily activity (last 14 days) -->
-    <div class="dash-section">
-      <div class="dash-section-title">DAILY ACTIVITY — LAST 14 DAYS</div>
-      <div class="chart-wrap">
-        <div class="bar-chart" id="bar-chart"></div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;">
-          <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text-dim);display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent);display:inline-block"></span>SCRIPTS</span>
-          <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text-dim);display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#ffcc64;display:inline-block"></span>JP→EN</span>
-          <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text-dim);display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent2);display:inline-block"></span>LIVE</span>
-          <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--text-dim);display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent3);display:inline-block"></span>AI CHAT</span>
-        </div>
-      </div>
+    <div class="section-title">フレーズ習得状況</div>
+    <div style="margin-bottom:6px;display:flex;justify-content:space-between;font-size:13px;color:var(--color-text-secondary);">
+      <span id="mastery-text">0 / 20</span><span id="mastery-pct">0%</span>
     </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="mastery-bar" style="width:0%"></div></div>
 
-    <!-- CUMULATIVE LINE CHART -->
-    <div class="dash-section">
-      <div class="dash-section-title">CUMULATIVE PHRASES — ALL TIME</div>
-      <div class="chart-wrap">
-        <svg id="line-chart" viewBox="0 0 300 80" preserveAspectRatio="none" height="80"></svg>
-      </div>
-    </div>
-
-    <!-- METHOD BREAKDOWN -->
-    <div class="dash-section">
-      <div class="dash-section-title">METHOD BREAKDOWN — ALL TIME</div>
-      <div class="chart-wrap">
-        <div class="method-bar-row" id="method-breakdown"></div>
-      </div>
-    </div>
-
-    <!-- DAILY REPORTS -->
-    <div class="dash-section">
-      <div class="dash-section-title">DAILY REPORTS — RECENT 7 DAYS</div>
-      <div id="daily-reports"></div>
-    </div>
-  </div>
-
-</div><!-- /scroll-area -->
-
-<!-- METHOD D -->
-<div id="screen-methodD" class="screen">
-  <div class="topic-scroll" id="topic-bar"></div>
-  <div class="chat-msgs" id="chat-msgs">
-    <div class="msg ai">
-      <div class="msg-av">AI</div>
-      <div class="msg-right">
-        <div class="msg-bub">Hello! Choose a topic and let's start. Don't worry about mistakes — just speak your mind. I'll give gentle feedback after each message. 💬</div>
-      </div>
-    </div>
-  </div>
-  <div class="chat-input-row">
-    <textarea class="chat-textarea" id="chat-input" rows="1" placeholder="Type in English…" oninput="autoResize(this)"></textarea>
-    <button class="send-btn" onclick="sendChat()">↑</button>
+    <div class="section-title">フレーズ一覧</div>
+    <div class="phrase-list" id="phrase-list-dash"></div>
   </div>
 </div>
-
-<!-- PRACTICE MODAL -->
-<div class="practice-modal" id="practice-modal">
-  <div class="practice-inner">
-    <div class="pm-progress" id="pm-progress">1 / 5</div>
-    <div class="pm-phrase" id="pm-phrase" onclick="speakCurrent()"></div>
-    <div class="pm-ja" id="pm-ja"></div>
-    <div class="pm-tap-hint">▲ フレーズをタップすると発音します</div>
-    <div class="rep-ring" id="rep-ring"><div class="rep-num" id="rep-num">0</div></div>
-    <div class="rep-hint">/ 10 reps — 声に出して言いましょう</div>
-    <div class="pm-btn-row">
-      <button class="btn btn-green" style="flex:1" onclick="countRep()">✓ SAID IT</button>
-      <button class="btn btn-secondary" style="flex:1" onclick="nextPhrase()">NEXT →</button>
-    </div>
-    <button class="btn btn-secondary" style="width:100%" onclick="closePractice()">CLOSE</button>
-  </div>
-</div>
-
-<nav class="bottom-nav">
-  <button class="nav-item active" onclick="showScreen('home')"><div class="nav-icon">🏠</div><div class="nav-label">HOME</div></button>
-  <button class="nav-item" onclick="showScreen('methodA')"><div class="nav-icon">🗂️</div><div class="nav-label">SCRIPTS</div></button>
-  <button class="nav-item" onclick="showScreen('methodB')"><div class="nav-icon">🔄</div><div class="nav-label">JP→EN</div></button>
-  <button class="nav-item" onclick="showScreen('methodC')"><div class="nav-icon">🎙️</div><div class="nav-label">LIVE</div></button>
-  <button class="nav-item" onclick="showScreen('methodD')"><div class="nav-icon">💬</div><div class="nav-label">AI CHAT</div></button>
-  <button class="nav-item" onclick="showScreen('dashboard')"><div class="nav-icon">📊</div><div class="nav-label">STATS</div></button>
-</nav>
 
 <script>
-// ============================================================
-// DATA
-// ============================================================
-const PHRASES = [
-  { en:"Alright, another day at the office. Let's get this done.", ja:"よし、また仕事の一日だ。やるか。", cat:"morning", ctx:"起床時" },
-  { en:"The commute is 10 minutes to the station. Not bad.", ja:"駅まで10分。まあ悪くない。", cat:"morning", ctx:"歩き始め" },
-  { en:"This 10-minute walk is probably the only exercise I get today.", ja:"この10分が今日唯一の運動かも。", cat:"morning", ctx:"通勤中" },
-  { en:"I need to prep for the 9 o'clock meeting.", ja:"9時の会議の準備をしないと。", cat:"morning", ctx:"通勤中" },
-  { en:"It's a bit chilly this morning. Should've worn a jacket.", ja:"今朝は少し寒い。ジャケット着ればよかった。", cat:"morning", ctx:"外に出た瞬間" },
-  { en:"Making coffee. I need this.", ja:"コーヒーを入れる。これがないとね。", cat:"morning", ctx:"朝のコーヒー" },
-  { en:"Bag, keys, phone. Let's go.", ja:"鞄、鍵、スマホ。行こう。", cat:"morning", ctx:"出発前" },
-  { en:"What should I have for lunch?", ja:"ランチ何にしようか？", cat:"lunch", ctx:"昼時" },
-  { en:"I want something decent, not just convenience store food.", ja:"コンビニじゃなくて、ちゃんとしたものが食べたい。", cat:"lunch", ctx:"ランチ選び" },
-  { en:"I've been eating out every day this week. My wallet is hurting.", ja:"今週ずっと外食だ。財布が痛い。", cat:"lunch", ctx:"ランチ中" },
-  { en:"I miss home cooking. This project needs to wrap up soon.", ja:"自炊が恋しい。このプロジェクト早く終わってほしい。", cat:"lunch", ctx:"ランチ中" },
-  { en:"This is actually pretty good. The broth is rich.", ja:"これ意外と美味しい。出汁が濃い。", cat:"lunch", ctx:"食事中" },
-  { en:"Not worth the price, honestly.", ja:"正直、値段に見合わない。", cat:"lunch", ctx:"食後" },
-  { en:"I only have 30 minutes. Better eat fast.", ja:"30分しかない。早く食べないと。", cat:"lunch", ctx:"昼休み" },
-  { en:"The key message I need to get across today is...", ja:"今日伝えるべき核心は...", cat:"work", ctx:"会議前" },
-  { en:"The client is going to push back on the timeline.", ja:"クライアントはスケジュールに反発してくるだろう。", cat:"work", ctx:"会議前" },
-  { en:"This analysis isn't adding up. Let me rethink the assumptions.", ja:"この分析、合わない。仮定を見直そう。", cat:"work", ctx:"作業中" },
-  { en:"I'm a manager, but I'm still doing analyst work. Something's off.", ja:"マネージャーなのにアナリスト仕事している。何かがおかしい。", cat:"work", ctx:"仕事中" },
-  { en:"Deadline is Friday. That's doable if I focus.", ja:"締切は金曜日。集中すれば間に合う。", cat:"work", ctx:"タスク確認" },
-  { en:"It's only 3 PM and I'm already drained.", ja:"まだ3時なのにもう消耗している。", cat:"work", ctx:"午後" },
-  { en:"I need a coffee. Badly.", ja:"コーヒーが必要。切実に。", cat:"work", ctx:"午後の眠気" },
-  { en:"Why am I still here at 9 PM?", ja:"なんで夜9時にまだここにいるんだ。", cat:"work", ctx:"残業中" },
-  { en:"Today was productive. Closed two key issues with the client.", ja:"今日は生産的だった。クライアントとの重要課題を2つ解決した。", cat:"evening", ctx:"帰宅中の振り返り" },
-  { en:"That meeting went sideways. I should have pushed back earlier.", ja:"あの会議はうまくいかなかった。もっと早く反論すべきだった。", cat:"evening", ctx:"反省" },
-  { en:"I want something satisfying after this long day.", ja:"長い一日の後は、満足できるものが食べたい。", cat:"evening", ctx:"夕食選び" },
-  { en:"I really want to cook my own food. I know exactly what I want to eat.", ja:"本当に自炊したい。自分の食べたいものがわかっている。", cat:"evening", ctx:"夕食時の思い" },
-  { en:"How long am I going to keep doing this?", ja:"あとどれくらいこれを続けるんだろう。", cat:"career", ctx:"帰り道" },
-  { en:"I have the skills. I have the network. What's holding me back?", ja:"スキルもある。人脈もある。何が自分を止めているんだ？", cat:"career", ctx:"独立を考えるとき" },
-  { en:"If I go independent, what would my first client look like?", ja:"独立したら、最初のクライアントはどんな企業だろう？", cat:"career", ctx:"独立を考えるとき" },
-  { en:"I should update my LinkedIn this weekend.", ja:"今週末、LinkedInを更新しないと。", cat:"career", ctx:"転職活動" },
-  { en:"What kind of life do I actually want in 5 years?", ja:"5年後、自分は本当にどんな生活を望んでいるんだろう？", cat:"career", ctx:"将来を考えるとき" },
-  { en:"I need to think seriously about my next move.", ja:"次のキャリアを真剣に考える必要がある。", cat:"career", ctx:"帰り道" },
-  { en:"He's growing up so fast. I want to spend more time with him.", ja:"あの子の成長は早い。もっと一緒にいたい。", cat:"family", ctx:"息子を見て" },
-  { en:"We haven't had a proper dinner together all week.", ja:"今週、ちゃんとした夕食を一緒に食べていない。", cat:"family", ctx:"週末に気づく" },
-  { en:"This is what I'm working for. I need to protect this time.", ja:"これが自分の頑張る理由だ。この時間は守らないと。", cat:"family", ctx:"家族といる時間" },
-  { en:"Finally cooking at home. This is what I actually enjoy.", ja:"やっと家で料理できる。これが自分の楽しみだ。", cat:"family", ctx:"週末の自炊" },
+const PHRASES=[
+  {en:"My read on this is that the data issue is the root cause.",ja:"私の見方では、データの問題が根本原因です。",cat:"意見を述べる",tip:"My read on this is... の後に「自分が思うこと」を続けるだけ。"},
+  {en:"The way I see it, we need to reframe the problem first.",ja:"私としては、まず問題を再定義する必要があります。",cat:"意見を述べる",tip:"The way I see it は柔らかく意見を述べる定番表現。"},
+  {en:"I'd push back slightly on that—the issue isn't adoption.",ja:"少し反論させてください。問題は導入ではありません。",cat:"反論する",tip:"I'd push back... の後に理由を続けると自然な反論になります。"},
+  {en:"I'm not fully convinced yet—can we look at the data?",ja:"まだ完全には納得できていません。データを確認できますか？",cat:"反論する",tip:"強く否定せず、データで確認する姿勢が示せる表現。"},
+  {en:"Let me try to frame the problem here.",ja:"ここで問題を整理させてください。",cat:"議論を整理する",tip:"議論が散漫になったときに使うと主導権を持てます。"},
+  {en:"Before we go further, can we agree on what success looks like?",ja:"先に進む前に、成功の定義を合意できますか？",cat:"議論を整理する",tip:"コンサル的な問いかけ。ゴールを確認する場面で有効。"},
+  {en:"The core question we're trying to answer is—does everyone agree?",ja:"我々が答えようとしている核心の問いは何か—皆さん同意できますか？",cat:"議論を整理する",tip:"The core question is... で議論の焦点を一本化できます。"},
+  {en:"Can you walk me through the rationale?",ja:"その根拠を説明していただけますか？",cat:"質問・確認",tip:"Walk me through... は「順を追って説明して」という依頼表現。"},
+  {en:"What's driving that assumption?",ja:"その前提の根拠は何ですか？",cat:"質問・確認",tip:"前提を問う鋭い質問。コンサルらしい表現。"},
+  {en:"Just to make sure I'm following—are you saying we should pivot?",ja:"確認ですが、方向転換すべきということでしょうか？",cat:"質問・確認",tip:"Just to make sure I'm following... は誤解を防ぐ丁寧な確認表現。"},
+  {en:"Let me think about how that maps to what we found.",ja:"それが私たちの発見とどう関連するか考えさせてください。",cat:"時間を稼ぐ",tip:"沈黙を避けながら考える時間を作れる便利な表現。"},
+  {en:"That's a fair point—let me come back to it.",ja:"良い指摘です。後でその点に戻ります。",cat:"時間を稼ぐ",tip:"即答できないときに使える。必ず後で戻るのが誠実さのポイント。"},
+  {en:"The bottom line is that we need to act this quarter.",ja:"結論として、今四半期中に行動する必要があります。",cat:"結論を言う",tip:"The bottom line is... はコンサルでよく使われる締めの表現。"},
+  {en:"Net-net, what this tells us is we should proceed with phase two.",ja:"総括すると、フェーズ2に進むべきということです。",cat:"結論を言う",tip:"Net-net はコンサル・外資系で頻出の「つまるところ」という意味。"},
+  {en:"Based on what I've seen in similar engagements, the pattern is clear.",ja:"類似案件での経験からすると、パターンは明確です。",cat:"経験を引用する",tip:"自分の経験に基づく意見を示す。信頼性が上がります。"},
+  {en:"Our recommendation is to proceed with a phased approach—here's the rationale.",ja:"段階的アプローチで進めることを推薦します。根拠は以下の通りです。",cat:"推薦・提案",tip:"Our recommendation is... の後に根拠を続ける定番構造。"},
+  {en:"We're on track to deliver the roadmap by end of month.",ja:"月末までにロードマップを納品できる見込みです。",cat:"進捗報告",tip:"On track to... は「予定通り進んでいる」という報告表現。"},
+  {en:"We've hit a dependency on the client's IT team—it's on our risk log.",ja:"クライアントのITチームへの依存が生じており、リスクログに記録しています。",cat:"進捗報告",tip:"問題を報告しつつ、管理できていることも示せます。"},
+  {en:"I specialize in enterprise DX, working primarily with financial services clients.",ja:"金融サービス企業を主な対象として、エンタープライズDXを専門にしています。",cat:"自己紹介",tip:"I specialize in... で専門性を簡潔に伝えられます。"},
+  {en:"What I bring to the table is the ability to structure ambiguous problems.",ja:"私が提供できる価値は、曖昧な問題を構造化する能力です。",cat:"自己紹介",tip:"What I bring to the table is... は強みを伝える定番フレーズ。"}
 ];
 
-const CATS = [
-  {id:'all',label:'ALL'},{id:'morning',label:'🌅 朝'},{id:'lunch',label:'🍜 ランチ'},
-  {id:'work',label:'💼 仕事'},{id:'evening',label:'🌙 夜'},{id:'career',label:'🚀 転職'},{id:'family',label:'👨‍👩‍👦 家族'},
+const CATS=["全て",...new Set(PHRASES.map(p=>p.cat))];
+const DAILY_GOALS={listen:3,record:2,done:1};
+
+const LEVELS=[
+  {lv:1,label:"Beginner",xpNeeded:100},
+  {lv:2,label:"Learner",xpNeeded:250},
+  {lv:3,label:"Practitioner",xpNeeded:500},
+  {lv:4,label:"Speaker",xpNeeded:900},
+  {lv:5,label:"Fluent",xpNeeded:99999}
 ];
 
-const TRANSLATIONS = [
-  {ja:"腹減ったな", en:"I'm hungry."},
-  {ja:"眠い", en:"I'm so tired."},
-  {ja:"この分析おかしいな", en:"Something's off with this analysis."},
-  {ja:"早く帰りたい", en:"I want to go home."},
-  {ja:"転職どうしようかな", en:"I need to think about my next move."},
-  {ja:"今日の会議うまくいった", en:"Today's meeting went well."},
-  {ja:"クライアントが難しい", en:"The client is being difficult."},
-  {ja:"締切に間に合いそうにない", en:"I don't think I'll make the deadline."},
-  {ja:"もう少し時間が必要だ", en:"I need a bit more time."},
-  {ja:"それは良いアイデアだと思う", en:"I think that's a good idea."},
-  {ja:"もう一度確認してもいいですか", en:"Could you go over that again?"},
-  {ja:"そのリスクについてどう思いますか", en:"What's your take on that risk?"},
-  {ja:"私の意見では、", en:"From my perspective,"},
-  {ja:"重要なポイントは", en:"The key point here is"},
-  {ja:"少し考える時間をください", en:"Let me think about that for a moment."},
-  {ja:"独立したい", en:"I want to go independent."},
-  {ja:"家族との時間が足りない", en:"I'm not spending enough time with my family."},
-  {ja:"このプロジェクト、いつ終わるんだ", en:"When is this project going to end?"},
-  {ja:"週末は自炊しよう", en:"I'll cook at home this weekend."},
-  {ja:"もっとコントロールが欲しい", en:"I want more control over my work."},
+const BADGES=[
+  {id:"first_listen",label:"First Listen",desc:"初めて音声を聞いた",icon:"▶",check:s=>s.totalListens>=1},
+  {id:"streak3",label:"3日連続",desc:"3日連続練習",icon:"▲",check:s=>calcStreak(s)>=3},
+  {id:"streak7",label:"7日連続",desc:"7日連続練習",icon:"★",check:s=>calcStreak(s)>=7},
+  {id:"phrases5",label:"5フレーズ習得",desc:"5フレーズ習得",icon:"✓",check:s=>s.done.length>=5},
+  {id:"phrases10",label:"10フレーズ習得",desc:"10フレーズ習得",icon:"✓✓",check:s=>s.done.length>=10},
+  {id:"phrases20",label:"全フレーズ習得",desc:"全20フレーズ習得",icon:"★★",check:s=>s.done.length>=20},
+  {id:"norma7",label:"7日ノルマ達成",desc:"7日間ノルマクリア",icon:"◆",check:s=>s.normaDays>=7},
 ];
 
-const SITUATIONS = [
-  { id:"wakeup", icon:"⏰", name:"起床・朝の準備", desc:"歯磨き、コーヒー、出発前", phrases:[
-    {en:"Brushing my teeth. Almost ready.", ja:"歯磨き中。もうすぐ準備完了。"},
-    {en:"Making coffee. I need this.", ja:"コーヒーを作っている。これが必要だ。"},
-    {en:"Okay. Bag, keys, phone. Let's go.", ja:"よし。鞄、鍵、スマホ。行こう。"},
-    {en:"Running a bit late. Need to hurry.", ja:"少し遅れている。急がないと。"},
-  ]},
-  { id:"commute", icon:"🚶", name:"通勤（駅まで10分）", desc:"歩きながら実況", phrases:[
-    {en:"Walking to the station. 10 minutes.", ja:"駅に向かって歩いている。10分。"},
-    {en:"It's cold today. Should've worn a coat.", ja:"今日は寒い。コートを着ればよかった。"},
-    {en:"Train's coming in 3 minutes.", ja:"電車は3分後に来る。"},
-    {en:"Got a seat. Nice.", ja:"座れた。ラッキー。"},
-    {en:"Checking messages. Lots of them.", ja:"メッセージを確認している。たくさん来ている。"},
-  ]},
-  { id:"meeting", icon:"💼", name:"会議前後", desc:"準備・振り返り", phrases:[
-    {en:"Pulling up the slides. Meeting in 5.", ja:"スライドを開いている。会議まで5分。"},
-    {en:"Three agenda items. Keep it tight.", ja:"アジェンダは3つ。簡潔にいこう。"},
-    {en:"Good meeting. Hit the key points.", ja:"良い会議だった。重要なポイントを押さえた。"},
-    {en:"That could have gone better.", ja:"もっとうまくできたな。"},
-  ]},
-  { id:"lunch", icon:"🍜", name:"ランチ選び", desc:"何を食べるか考えながら", phrases:[
-    {en:"What do I feel like today? Ramen, maybe.", ja:"今日は何が食べたいか。ラーメンかな。"},
-    {en:"This smells amazing. Going in.", ja:"すごく美味しそうな匂いだ。入ろう。"},
-    {en:"Only 20 minutes. Gotta be quick.", ja:"20分しかない。早くしないと。"},
-    {en:"Not bad. I'll come back here.", ja:"悪くない。また来よう。"},
-  ]},
-  { id:"evening", icon:"🌙", name:"帰宅・夕食", desc:"電車の中、夕食選び", phrases:[
-    {en:"Heading home. Finally.", ja:"帰宅中。やっと。"},
-    {en:"What do I want for dinner? Something warm.", ja:"夕食は何にしよう。温かいものがいい。"},
-    {en:"Long day. Good to be home.", ja:"長い一日だった。家に帰れてよかった。"},
-    {en:"Sitting down. Letting go of work mode.", ja:"座る。仕事モードをオフにする。"},
-  ]},
-  { id:"thinking", icon:"🤔", name:"転職・将来を考える", desc:"ひとりでいるとき", phrases:[
-    {en:"What am I doing with my career?", ja:"キャリアをどうしたいんだろう。"},
-    {en:"Five years from now. What does that look like?", ja:"5年後。どんな姿になっているだろう。"},
-    {en:"I have the skills. Now what?", ja:"スキルはある。次は何だ？"},
-    {en:"First step: update the resume.", ja:"まずは：職務経歴書を更新する。"},
-  ]},
-];
-
-const TOPICS = [
-  {id:"intro", label:"自己紹介", prompt:"Practice business self-introduction. Ask the user to introduce themselves as a management consultant, respond naturally, ask follow-up questions. After each user message note 1 strength + 1 improvement (mark 💡). Be warm and concise."},
-  {id:"meeting", label:"会議意見", prompt:"Simulate a business meeting about project strategy. Play a client or colleague. After each user message give 1 positive note + 1 language tip (mark 💡). Be realistic but supportive."},
-  {id:"career", label:"転職・独立", prompt:"Discuss career transition from consulting to independent. Be supportive but realistic. After each message give 1 positive note + 1 language tip (mark 💡)."},
-  {id:"smalltalk", label:"雑談", prompt:"Casual small talk about lunch, weekend, Tokyo life. After each message note 1 great expression + 1 more natural alternative (mark 💡). Keep it light."},
-  {id:"presentation", label:"プレゼン", prompt:"Practice presenting business ideas. Ask the user to explain something from their work. Give 1 strength + 1 language improvement (mark 💡). Be encouraging."},
-];
-
-// ============================================================
-// TTS ENGINE
-// ============================================================
-let ttsSpeed = 0.85;
-let currentUtterance = null;
-let currentTtsBtn = null;
-
-function setSpeed(s) {
-  ttsSpeed = s;
-  document.getElementById('spd-slow').classList.toggle('active', s === 0.85);
-  document.getElementById('spd-normal').classList.toggle('active', s === 1.0);
+function loadState(){
+  try{
+    const raw=localStorage.getItem('eng_state_v2');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {done:[],practiceLog:[],todayListens:0,todayRecords:0,todayDoneCount:0,lastDate:'',totalListens:0,totalRecords:0,xp:0,normaDays:0,earnedBadges:[]};
 }
 
-function speak(text, btnEl) {
-  if (!window.speechSynthesis) { alert('このブラウザは音声合成に対応していません。'); return; }
+function saveState(){
+  try{localStorage.setItem('eng_state_v2',JSON.stringify(st));}catch(e){}
+}
 
-  // Stop any current speech
-  window.speechSynthesis.cancel();
-  if (currentTtsBtn) { currentTtsBtn.classList.remove('playing'); currentTtsBtn.textContent = '🔊'; }
+let st=loadState();
+let uiState={cat:"全て",idx:0,isRecording:false,mediaRecorder:null};
 
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'en-US';
-  utter.rate = ttsSpeed;
-  utter.pitch = 1.0;
+function todayStr(){return new Date().toISOString().slice(0,10);}
 
-  // Try to pick a good English voice
-  const voices = window.speechSynthesis.getVoices();
-  const preferred = voices.find(v => v.lang === 'en-US' && v.name.includes('Samantha'))
-    || voices.find(v => v.lang === 'en-US' && !v.name.includes('Google'))
-    || voices.find(v => v.lang.startsWith('en'));
-  if (preferred) utter.voice = preferred;
-
-  if (btnEl) {
-    btnEl.classList.add('playing');
-    btnEl.textContent = '⏸';
-    currentTtsBtn = btnEl;
+function checkDate(){
+  const t=todayStr();
+  if(st.lastDate!==t){
+    st.todayListens=0; st.todayRecords=0; st.todayDoneCount=0; st.lastDate=t;
+    saveState();
   }
-
-  utter.onend = () => {
-    if (btnEl) { btnEl.classList.remove('playing'); btnEl.textContent = '🔊'; }
-    if (currentTtsBtn === btnEl) currentTtsBtn = null;
-  };
-  utter.onerror = () => {
-    if (btnEl) { btnEl.classList.remove('playing'); btnEl.textContent = '🔊'; }
-  };
-
-  currentUtterance = utter;
-  window.speechSynthesis.speak(utter);
 }
 
-function makeTtsBtn(text, extraClass) {
-  return `<button class="tts-btn ${extraClass||''}" onclick="speak('${text.replace(/'/g, "\\'")}', this)">🔊</button>`;
-}
-
-// Voices may load async on some browsers
-if (window.speechSynthesis) {
-  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-}
-
-// ============================================================
-// STATE
-// ============================================================
-let selectedPhrases = [];
-let currentPhraseIdx = 0;
-let repCount = 0;
-let currentCat = 'all';
-let bCards = [];
-let activeSit = null;
-let currentTopic = TOPICS[0];
-let chatHistory = [];
-let stats = JSON.parse(localStorage.getItem('esp_stats4') || '{"streak":0,"sessions":0,"phrases":0}');
-
-// ============================================================
-// NAV
-// ============================================================
-function showScreen(id) {
-  const scroll = document.getElementById('scroll-area');
-  const chat = document.getElementById('screen-methodD');
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  if (id === 'methodD') {
-    scroll.style.display = 'none';
-    chat.classList.add('active');
-    renderTopicBar();
-  } else {
-    scroll.style.display = '';
-    document.getElementById('screen-' + id).classList.add('active');
-    scroll.scrollTop = 0;
-  }
-  const navIds = ['home','methodA','methodB','methodC','methodD','dashboard'];
-  document.querySelectorAll('.nav-item').forEach((b, i) => {
-    b.classList.toggle('active', navIds[i] === id);
-  });
-  if (id === 'methodA') renderFlashcards();
-  if (id === 'methodB') { if (!bCards.length) startMethodB(); else renderBCards(); }
-  if (id === 'methodC') renderSituations();
-  if (id === 'dashboard') renderDashboard();
-}
-
-// ============================================================
-// STATS & LOG SYSTEM
-// ============================================================
-// stats: simple counters (legacy, kept for home screen)
-// dailyLog: { "YYYY-MM-DD": { phrases: N, sessions: N, methodA: N, methodB: N, methodC: N, methodD: N } }
-
-function todayKey() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-
-function loadLog() {
-  try { return JSON.parse(localStorage.getItem('esp_log') || '{}'); } catch(e) { return {}; }
-}
-function saveLog(log) { localStorage.setItem('esp_log', JSON.stringify(log)); }
-
-function logActivity(type, method) {
-  // type: 'phrase' | 'session'
-  // method: 'A' | 'B' | 'C' | 'D'
-  const log = loadLog();
-  const key = todayKey();
-  if (!log[key]) log[key] = { phrases:0, sessions:0, A:0, B:0, C:0, D:0 };
-  if (type === 'phrase') { log[key].phrases++; log[key][method] = (log[key][method]||0) + 1; }
-  if (type === 'session') log[key].sessions++;
-  saveLog(log);
-  updateStreak();
-}
-
-function updateStreak() {
-  const log = loadLog();
-  const allKeys = Object.keys(log).sort();
-  if (!allKeys.length) { stats.streak = 0; saveStats(); return; }
-
-  // streak: count consecutive days with activity, starting from yesterday if today has none
-  const today = todayKey();
-  const todayActive = log[today] && (log[today].phrases > 0 || log[today].sessions > 0);
-  let streak = todayActive ? 1 : 0;
-  const startOffset = todayActive ? 1 : 0; // start checking from yesterday if today is empty
-
-  for (let i = 1; i < 365; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - (i + startOffset));
-    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    if (log[k] && (log[k].phrases > 0 || log[k].sessions > 0)) { streak++; }
+function calcStreak(s){
+  let streak=0;
+  const today=new Date();
+  for(let i=0;i<365;i++){
+    const d=new Date(today); d.setDate(d.getDate()-i);
+    if(s.practiceLog.includes(d.toISOString().slice(0,10))) streak++;
     else break;
   }
-  stats.streak = streak;
+  return streak;
+}
 
-  // best streak calculation
-  let best = 0, cur = 0, prevKey = null;
-  for (const k of allKeys) {
-    const d = log[k];
-    if (d.phrases > 0 || d.sessions > 0) {
-      if (prevKey) {
-        const prev = new Date(prevKey), curr = new Date(k);
-        const diff = Math.round((curr - prev) / 86400000);
-        cur = diff === 1 ? cur + 1 : 1;
-      } else { cur = 1; }
-      best = Math.max(best, cur);
-      prevKey = k;
+function getLevelInfo(xp){
+  let accumulated=0;
+  for(let i=0;i<LEVELS.length;i++){
+    const needed=LEVELS[i].xpNeeded;
+    if(xp<accumulated+needed){
+      return{lv:LEVELS[i].lv,label:LEVELS[i].label,xpInLevel:xp-accumulated,xpNeeded:needed,pct:Math.round((xp-accumulated)/needed*100)};
+    }
+    accumulated+=needed;
+  }
+  const last=LEVELS[LEVELS.length-1];
+  return{lv:last.lv,label:last.label,xpInLevel:0,xpNeeded:1,pct:100};
+}
+
+function isNormaOK(){
+  return st.todayListens>=DAILY_GOALS.listen && st.todayRecords>=DAILY_GOALS.record && st.todayDoneCount>=DAILY_GOALS.done;
+}
+
+function logPractice(){
+  const t=todayStr();
+  if(!st.practiceLog.includes(t)) st.practiceLog.push(t);
+  if(isNormaOK()){
+    const key='norma_'+t;
+    if(!st.earnedBadges.includes(key)){
+      st.earnedBadges.push(key);
+      st.normaDays=(st.normaDays||0)+1;
     }
   }
-  stats.bestStreak = Math.max(best, streak);
-  saveStats();
+  saveState();
 }
 
-function updateStats() {
-  document.getElementById('stat-streak').textContent = stats.streak;
-  document.getElementById('stat-sessions').textContent = stats.sessions;
-  document.getElementById('stat-phrases').textContent = stats.phrases;
-}
-function saveStats() { localStorage.setItem('esp_stats4', JSON.stringify(stats)); updateStats(); }
-
-// ============================================================
-// DASHBOARD RENDER
-// ============================================================
-function renderDashboard() {
-  const log = loadLog();
-  const allDates = Object.keys(log).sort();
-  const today = todayKey();
-  const todayData = log[today] || { phrases:0, sessions:0, A:0, B:0, C:0, D:0 };
-
-  // KPIs
-  const totalPhrases = allDates.reduce((s,k) => s + (log[k].phrases||0), 0);
-  const totalSessions = allDates.reduce((s,k) => s + (log[k].sessions||0), 0);
-  const activeDays = allDates.filter(k => (log[k].phrases||0) > 0 || (log[k].sessions||0) > 0).length;
-
-  document.getElementById('db-streak').textContent = stats.streak || 0;
-  document.getElementById('db-best').textContent = `best: ${stats.bestStreak || 0} days`;
-  document.getElementById('db-total-days').textContent = activeDays;
-  document.getElementById('db-total-phrases').textContent = totalPhrases;
-  document.getElementById('db-total-sessions').textContent = totalSessions;
-  document.getElementById('db-today-phrases').textContent = todayData.phrases || 0;
-  document.getElementById('db-today-sessions').textContent = todayData.sessions || 0;
-
-  renderCalendar(log);
-  renderBarChart(log);
-  renderLineChart(log);
-  renderMethodBreakdown(log);
-  renderDailyReports(log);
+function addXP(amount){
+  const before=getLevelInfo(st.xp).lv;
+  st.xp+=amount;
+  const after=getLevelInfo(st.xp).lv;
+  saveState();
+  renderXP();
+  if(after>before) showToast('レベルアップ！ Lv.'+after+' 達成');
+  checkBadges();
 }
 
-function getDateKey(daysAgo) {
-  const d = new Date();
-  d.setDate(d.getDate() - daysAgo);
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-
-function renderCalendar(log) {
-  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const wd = document.getElementById('cal-weekdays');
-  wd.innerHTML = weekdays.map(d => `<div class="cal-weekday">${d}</div>`).join('');
-
-  const today = new Date();
-  // start from 4 weeks ago Monday-aligned
-  const grid = document.getElementById('cal-grid');
-  const cells = [];
-  for (let i = 27; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const data = log[key];
-    const count = data ? (data.phrases || 0) : 0;
-    const level = count === 0 ? 0 : count < 5 ? 1 : count < 15 ? 2 : count < 30 ? 3 : 4;
-    const isToday = key === todayKey();
-    cells.push(`<div class="cal-day active-${level} ${isToday?'today':''}" title="${key}: ${count} phrases"></div>`);
-  }
-  grid.innerHTML = cells.join('');
-}
-
-function renderBarChart(log) {
-  const container = document.getElementById('bar-chart');
-  const days = 14;
-  const data = [];
-  for (let i = days-1; i >= 0; i--) {
-    const key = getDateKey(i);
-    const d = log[key] || { phrases:0, sessions:0, A:0, B:0, C:0, D:0 };
-    data.push({ key, A: d.A||0, B: d.B||0, C: d.C||0, D: d.D||0,
-      total: (d.A||0)+(d.B||0)+(d.C||0)+(d.D||0), isToday: i===0 });
-  }
-  const max = Math.max(...data.map(d => d.total), 1);
-  const METHOD_COLORS = { A:'var(--accent)', B:'#ffcc64', C:'var(--accent2)', D:'var(--accent3)' };
-
-  container.innerHTML = data.map(d => {
-    const mm = d.key.slice(5,7), dd = d.key.slice(8,10);
-    const label = `${parseInt(mm)}/${parseInt(dd)}`;
-    const segments = ['A','B','C','D'].map(m => {
-      if (!d[m]) return '';
-      const pct = (d[m] / max) * 100;
-      return `<div style="width:100%;height:${pct.toFixed(1)}%;background:${METHOD_COLORS[m]};opacity:${d.isToday?1:0.7};min-height:${d[m]>0?2:0}px;"></div>`;
-    }).reverse().join('');
-    return `<div class="bar-col">
-      <div class="bar-fill" style="height:${Math.round((d.total/max)*100)}%;background:transparent;display:flex;flex-direction:column;justify-content:flex-end;padding:0;border-radius:4px;overflow:hidden;">${segments}</div>
-      <div class="bar-lbl" style="color:${d.isToday?'var(--accent3)':'var(--text-dimmer)'}">${label}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderLineChart(log) {
-  const svg = document.getElementById('line-chart');
-  const allDates = Object.keys(log).sort();
-  if (allDates.length < 2) {
-    svg.innerHTML = `<text x="150" y="44" text-anchor="middle" font-size="10" fill="#40405a" font-family="DM Mono,monospace">練習データが増えると表示されます</text>`;
-    return;
-  }
-
-  // Build cumulative array
-  let cum = 0;
-  const points = allDates.map(k => { cum += (log[k].phrases || 0); return cum; });
-  const maxVal = Math.max(...points, 1);
-  const W = 300, H = 80, PAD = 8;
-  const xs = points.map((_, i) => PAD + (i / (points.length - 1)) * (W - PAD*2));
-  const ys = points.map(v => H - PAD - ((v / maxVal) * (H - PAD*2)));
-
-  const pathD = xs.map((x, i) => `${i===0?'M':'L'}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
-  const areaD = pathD + ` L${xs[xs.length-1].toFixed(1)},${(H-PAD).toFixed(1)} L${PAD},${(H-PAD).toFixed(1)} Z`;
-
-  svg.innerHTML = `
-    <defs>
-      <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#7c6aff" stop-opacity="0.4"/>
-        <stop offset="100%" stop-color="#7c6aff" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <path d="${areaD}" fill="url(#lg)"/>
-    <path d="${pathD}" fill="none" stroke="#7c6aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="${xs[xs.length-1].toFixed(1)}" cy="${ys[ys.length-1].toFixed(1)}" r="3" fill="#6affa0"/>
-    <text x="${xs[xs.length-1].toFixed(1)}" y="${(ys[ys.length-1]-6).toFixed(1)}" text-anchor="middle" font-size="8" fill="#6affa0" font-family="DM Mono,monospace">${points[points.length-1]}</text>
-  `;
-}
-
-function renderMethodBreakdown(log) {
-  const totals = { A:0, B:0, C:0, D:0 };
-  Object.values(log).forEach(d => {
-    totals.A += d.A||0; totals.B += d.B||0; totals.C += d.C||0; totals.D += d.D||0;
+function checkBadges(){
+  BADGES.forEach(b=>{
+    if(!st.earnedBadges.includes(b.id) && b.check(st)){
+      st.earnedBadges.push(b.id);
+      saveState();
+      showToast('バッジ獲得：'+b.label);
+    }
   });
-  const max = Math.max(...Object.values(totals), 1);
-  const methods = [
-    { key:'A', label:'SCRIPTS', color:'var(--accent)' },
-    { key:'B', label:'JP→EN',   color:'#ffcc64' },
-    { key:'C', label:'LIVE',    color:'var(--accent2)' },
-    { key:'D', label:'AI CHAT', color:'var(--accent3)' },
-  ];
-  document.getElementById('method-breakdown').innerHTML = methods.map(m => `
-    <div class="method-bar-item">
-      <div class="method-bar-label">${m.label}</div>
-      <div class="method-bar-track">
-        <div class="method-bar-fill" style="width:${Math.round((totals[m.key]/max)*100)}%; background:${m.color};"></div>
-      </div>
-      <div class="method-bar-count">${totals[m.key]}</div>
-    </div>
-  `).join('');
 }
 
-function renderDailyReports(log) {
-  const last7 = [];
-  for (let i = 0; i < 7; i++) last7.push(getDateKey(i));
-  const container = document.getElementById('daily-reports');
-  const cards = last7.map(key => {
-    const d = log[key];
-    if (!d || (d.phrases === 0 && d.sessions === 0)) return null;
-    const label = key === todayKey() ? 'Today' : key === getDateKey(1) ? 'Yesterday' : key;
-    return `<div class="report-card">
-      <div class="report-date">${label} — ${key}</div>
-      <div class="report-row"><span class="report-method">📝 Phrases spoken</span><span class="report-count">${d.phrases||0}</span></div>
-      <div class="report-row"><span class="report-method">⚡ Sessions</span><span class="report-count">${d.sessions||0}</span></div>
-      ${(d.A||0)>0 ? `<div class="report-row"><span class="report-method">🗂️ Scripts</span><span class="report-count">${d.A}</span></div>` : ''}
-      ${(d.B||0)>0 ? `<div class="report-row"><span class="report-method">🔄 JP→EN</span><span class="report-count">${d.B}</span></div>` : ''}
-      ${(d.C||0)>0 ? `<div class="report-row"><span class="report-method">🎙️ Commentary</span><span class="report-count">${d.C}</span></div>` : ''}
-      ${(d.D||0)>0 ? `<div class="report-row"><span class="report-method">💬 AI Chat</span><span class="report-count">${d.D}</span></div>` : ''}
-    </div>`;
-  }).filter(Boolean);
-  container.innerHTML = cards.length ? cards.join('') : `<div class="report-empty">まだ記録がありません。練習を始めると表示されます。</div>`;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// ============================================================
-// METHOD A
-// ============================================================
-function renderFilterChips() {
-  document.getElementById('filter-row').innerHTML = CATS.map(c =>
-    `<button class="filter-chip ${currentCat===c.id?'active':''}" onclick="setCat('${c.id}')">${c.label}</button>`
+function renderXP(){
+  const info=getLevelInfo(st.xp);
+  document.getElementById('level-badge').textContent='Lv.'+info.lv+' '+info.label;
+  document.getElementById('xp-label-text').textContent='XP: '+info.xpInLevel+' / '+info.xpNeeded;
+  document.getElementById('xp-bar').style.width=info.pct+'%';
+}
+
+function renderGoals(){
+  const l=st.todayListens, r=st.todayRecords, d=st.todayDoneCount;
+  const gl=DAILY_GOALS.listen, gr=DAILY_GOALS.record, gd=DAILY_GOALS.done;
+
+  function dots(cur,total,done){
+    return Array.from({length:total},(_,i)=>i<cur?(done?'●':'●'):'○').join('');
+  }
+
+  document.getElementById('goal-listen-n').textContent=Math.min(l,gl);
+  document.getElementById('goal-record-n').textContent=Math.min(r,gr);
+  document.getElementById('goal-done-n').textContent=Math.min(d,gd);
+  document.getElementById('goal-listen-prog').textContent=Array.from({length:gl},(_,i)=>i<l?'●':'○').join('');
+  document.getElementById('goal-record-prog').textContent=Array.from({length:gr},(_,i)=>i<r?'●':'○').join('');
+  document.getElementById('goal-done-prog').textContent=Array.from({length:gd},(_,i)=>i<d?'●':'○').join('');
+
+  function setDone(id,ok){document.getElementById(id).classList.toggle('done',ok);}
+  setDone('goal-listen',l>=gl); setDone('goal-record',r>=gr); setDone('goal-done',d>=gd);
+
+  const ok=isNormaOK();
+  const bar=document.getElementById('today-bar');
+  bar.className='today-bar '+(ok?'ok':'ng');
+  document.getElementById('today-icon').textContent=ok?'✓':'○';
+  document.getElementById('today-title').textContent=ok?'今日のノルマ達成！':'今日のノルマ未達成';
+  const remaining=[];
+  if(l<gl) remaining.push('聞く あと'+(gl-l)+'回');
+  if(r<gr) remaining.push('録音 あと'+(gr-r)+'回');
+  if(d<gd) remaining.push('習得 あと'+(gd-d)+'フレーズ');
+  document.getElementById('today-sub').textContent=ok?'素晴らしい！ダッシュボードで記録を確認しよう':remaining.join('・');
+}
+
+function getFiltered(){return uiState.cat==="全て"?PHRASES:PHRASES.filter(p=>p.cat===uiState.cat);}
+
+function renderCats(){
+  document.getElementById('cat-row').innerHTML=CATS.map(c=>
+    `<button class="cat-btn ${c===uiState.cat?'active':''}" onclick="setCat('${c}')">${c}</button>`
   ).join('');
 }
-function setCat(id) { currentCat = id; renderFlashcards(); }
 
-function renderFlashcards() {
-  renderFilterChips();
-  const list = currentCat === 'all' ? PHRASES : PHRASES.filter(p => p.cat === currentCat);
-  document.getElementById('flashcard-list').innerHTML = list.map(p => {
-    const idx = PHRASES.indexOf(p);
-    const sel = selectedPhrases.includes(idx);
-    const safe = p.en.replace(/'/g, "\\'");
-    return `<div class="flashcard ${sel?'selected':''}">
-      <div class="fc-check" onclick="togglePhrase(${idx})">✓</div>
-      <div class="fc-body" onclick="togglePhrase(${idx})">
-        <div class="fc-en">"${p.en}"</div>
-        <div class="fc-ja">${p.ja}</div>
-        <div class="fc-ctx"># ${p.ctx}</div>
-      </div>
-      ${makeTtsBtn(p.en)}
-    </div>`;
-  }).join('');
-  const btn = document.getElementById('practice-btn');
-  btn.disabled = selectedPhrases.length === 0;
-  btn.textContent = selectedPhrases.length > 0 ? `▶ PRACTICE (${selectedPhrases.length})` : '▶ PRACTICE';
+function setCat(c){uiState.cat=c;uiState.idx=0;renderCats();renderPhrase();}
+
+function renderPhrase(){
+  const list=getFiltered();
+  if(!list.length) return;
+  const p=list[uiState.idx];
+  document.getElementById('phrase-cat').textContent=p.cat;
+  document.getElementById('phrase-en').textContent=p.en;
+  document.getElementById('phrase-ja').textContent=p.ja;
+  document.getElementById('tip-box').textContent='💡 '+p.tip;
+  document.getElementById('progress-text').textContent=(uiState.idx+1)+' / '+list.length;
+  document.getElementById('feedback-area').innerHTML='';
+  const gi=PHRASES.indexOf(p);
+  const isDone=st.done.includes(gi);
+  const btn=document.getElementById('done-btn');
+  btn.textContent=isDone?'✓ 習得済み':'✓ できた';
+  btn.style.opacity=isDone?'0.5':'1';
 }
 
-function togglePhrase(idx) {
-  selectedPhrases = selectedPhrases.includes(idx) ? selectedPhrases.filter(i=>i!==idx) : [...selectedPhrases, idx];
-  renderFlashcards();
+function prevPhrase(){const l=getFiltered();uiState.idx=(uiState.idx-1+l.length)%l.length;renderPhrase();}
+function nextPhrase(){const l=getFiltered();uiState.idx=(uiState.idx+1)%l.length;renderPhrase();}
+
+function speakPhrase(){
+  const p=getFiltered()[uiState.idx];
+  const u=new SpeechSynthesisUtterance(p.en);
+  u.lang='en-US'; u.rate=0.85;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+  st.todayListens++; st.totalListens++;
+  const firstListen=!st.earnedBadges.includes('first_listen');
+  logPractice(); addXP(5); renderGoals();
+  if(firstListen && st.totalListens>=1) checkBadges();
 }
 
-function selectRandom5() {
-  selectedPhrases = [...Array(PHRASES.length).keys()].sort(()=>Math.random()-0.5).slice(0,5);
-  currentCat = 'all';
-  renderFlashcards();
-}
-
-// ============================================================
-// PRACTICE MODAL
-// ============================================================
-function openPractice() {
-  if (!selectedPhrases.length) return;
-  currentPhraseIdx = 0; repCount = 0;
-  updatePracticeModal();
-  document.getElementById('practice-modal').classList.add('open');
-  logActivity('session', 'A');
-  stats.sessions++; saveStats();
-}
-function closePractice() {
-  window.speechSynthesis && window.speechSynthesis.cancel();
-  document.getElementById('practice-modal').classList.remove('open');
-}
-
-function speakCurrent() {
-  const p = PHRASES[selectedPhrases[currentPhraseIdx]];
-  if (p) speak(p.en, null);
-}
-
-function updatePracticeModal() {
-  const p = PHRASES[selectedPhrases[currentPhraseIdx]];
-  document.getElementById('pm-progress').textContent = `${currentPhraseIdx+1} / ${selectedPhrases.length}`;
-  document.getElementById('pm-phrase').textContent = `"${p.en}"`;
-  document.getElementById('pm-ja').textContent = p.ja;
-  document.getElementById('rep-num').textContent = repCount;
-  updateRing();
-}
-function updateRing() {
-  const pct = Math.min(repCount/10,1)*100;
-  const c = repCount>=10 ? 'var(--accent3)' : 'var(--accent)';
-  document.getElementById('rep-ring').style.background = `conic-gradient(${c} ${pct}%, var(--surface2) ${pct}%)`;
-  document.getElementById('rep-num').style.color = c;
-}
-function countRep() {
-  repCount = Math.min(repCount+1, 10);
-  logActivity('phrase', 'A');
-  stats.phrases++; saveStats();
-  document.getElementById('rep-num').textContent = repCount;
-  updateRing();
-  if (repCount >= 10) document.getElementById('pm-ja').textContent = '✓ Complete! 次のフレーズへ。';
-}
-function nextPhrase() {
-  currentPhraseIdx = (currentPhraseIdx+1) % selectedPhrases.length;
-  repCount = 0;
-  updatePracticeModal();
-}
-
-// ============================================================
-// METHOD B
-// ============================================================
-function startMethodB() {
-  bCards = [...TRANSLATIONS].sort(()=>Math.random()-0.5);
-  logActivity('session', 'B');
-  stats.sessions++; saveStats(); renderBCards();
-}
-function shuffleB() { bCards = [...TRANSLATIONS].sort(()=>Math.random()-0.5); renderBCards(); }
-function renderBCards() {
-  document.getElementById('b-list').innerHTML = bCards.map((item, i) => {
-    const safe = item.en.replace(/'/g, "\\'");
-    return `<div class="b-card">
-      <div class="b-num"># ${i+1} / ${bCards.length}</div>
-      <div class="b-jp">${item.ja}</div>
-      <button class="btn btn-secondary" style="font-size:0.72rem;padding:9px 16px" onclick="revealB(${i})">REVEAL ANSWER</button>
-      <div class="b-answer" id="b-ans-${i}">
-        <div class="b-answer-text">${item.en}</div>
-        ${makeTtsBtn(item.en)}
-      </div>
-    </div>`;
-  }).join('');
-}
-function revealB(i) {
-  const el = document.getElementById('b-ans-'+i);
-  el.classList.add('shown');
-  logActivity('phrase', 'B');
-  stats.phrases++; saveStats();
-}
-
-// ============================================================
-// METHOD C
-// ============================================================
-function renderSituations() {
-  document.getElementById('sit-list').innerHTML = SITUATIONS.map(s => `
-    <div class="sit-item ${activeSit===s.id?'active':''}" onclick="selectSit('${s.id}')">
-      <div class="sit-icon">${s.icon}</div>
-      <div style="flex:1"><div class="sit-name">${s.name}</div><div class="sit-desc">${s.desc}</div></div>
-      <div class="sit-arrow">${activeSit===s.id?'▾':'›'}</div>
-    </div>
-    ${activeSit===s.id ? s.phrases.map(p => {
-      return `<div class="phrase-card">
-        <div class="phrase-texts">
-          <div class="phrase-en">"${p.en}"</div>
-          <div class="phrase-ja">${p.ja}</div>
-        </div>
-      </div>`;
-    }).join('') : ''}
-  `).join('');
-}
-function selectSit(id) { activeSit = activeSit===id ? null : id; renderSituations(); }
-
-// ============================================================
-// METHOD D
-// ============================================================
-function renderTopicBar() {
-  document.getElementById('topic-bar').innerHTML = TOPICS.map(t =>
-    `<button class="topic-chip ${currentTopic.id===t.id?'active':''}" onclick="setTopic('${t.id}')">${t.label}</button>`
-  ).join('');
-}
-function setTopic(id) {
-  currentTopic = TOPICS.find(t=>t.id===id);
-  chatHistory = []; renderTopicBar();
-  document.getElementById('chat-msgs').innerHTML = `
-    <div class="msg ai"><div class="msg-av">AI</div>
-    <div class="msg-right">
-      <div class="msg-bub">Topic: <strong>${currentTopic.label}</strong>. Let's begin! I'll give gentle feedback after each message. 🚀</div>
-    </div></div>`;
-  logActivity('session', 'D');
-  stats.sessions++; saveStats();
-}
-
-async function sendChat() {
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = ''; input.style.height = 'auto';
-  appendMsg('user', text);
-  chatHistory.push({role:'user', content:text});
-  const loadId = appendLoading();
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514', max_tokens:1000,
-        system:`You are an encouraging English speaking coach for a Japanese business professional (TOEIC 875, management consultant at a foreign firm in Tokyo, family of 3, wants business fluency). ${currentTopic.prompt} Be warm and concise, under 100 words including feedback.`,
-        messages:chatHistory
-      })
-    });
-    const data = await res.json();
-    const reply = data.content.map(b=>b.text||'').join('');
-    removeLoading(loadId);
-    chatHistory.push({role:'assistant', content:reply});
-    appendMsg('ai', reply);
-    logActivity('phrase', 'D');
-    stats.phrases++; saveStats();
-  } catch(e) {
-    removeLoading(loadId);
-    appendMsg('ai', 'Connection error. Please try again.');
+function markDone(){
+  const p=getFiltered()[uiState.idx];
+  const gi=PHRASES.indexOf(p);
+  if(!st.done.includes(gi)){
+    st.done.push(gi);
+    st.todayDoneCount++;
+    logPractice(); addXP(20); renderGoals();
+    const fb=document.getElementById('feedback-area');
+    fb.innerHTML='<span style="color:#1D9E75;font-weight:500;">+20 XP！習得済みに記録しました</span>';
+    setTimeout(()=>{fb.innerHTML='';renderPhrase();},1800);
   }
 }
 
-function appendMsg(role, text) {
-  const msgs = document.getElementById('chat-msgs');
-  const id = 'msg-'+Date.now();
-  msgs.innerHTML += `
-    <div class="msg ${role}" id="${id}">
-      <div class="msg-av">${role==='ai'?'AI':'YOU'}</div>
-      <div class="msg-right">
-        <div class="msg-bub">${text.replace(/\n/g,'<br>')}</div>
-      </div>
+async function toggleRecord(){
+  const btn=document.getElementById('rec-btn');
+  const fb=document.getElementById('feedback-area');
+  if(!uiState.isRecording){
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      uiState.mediaRecorder=new MediaRecorder(stream);
+      uiState.mediaRecorder.start();
+      uiState.isRecording=true;
+      btn.textContent='■ 停止'; btn.classList.add('recording');
+      fb.innerHTML='<span style="color:#E24B4A;">録音中...</span>';
+    }catch(e){
+      fb.innerHTML='<span style="color:var(--color-text-secondary);">マイクへのアクセスが必要です</span>';
+    }
+  } else {
+    uiState.mediaRecorder.stop();
+    uiState.mediaRecorder.stream.getTracks().forEach(t=>t.stop());
+    uiState.isRecording=false;
+    btn.textContent='● 録音練習'; btn.classList.remove('recording');
+    st.todayRecords++; st.totalRecords++;
+    logPractice(); addXP(10); renderGoals();
+    fb.innerHTML='<span style="color:var(--color-text-secondary);">+10 XP！「聞く」で手本と比べてみましょう。</span>';
+    setTimeout(()=>{fb.innerHTML='';},3000);
+  }
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='practice')||(i===1&&t==='dashboard')));
+  document.getElementById('screen-practice').classList.toggle('active',t==='practice');
+  document.getElementById('screen-dashboard').classList.toggle('active',t==='dashboard');
+  if(t==='dashboard') renderDashboard();
+}
+
+function renderDashboard(){
+  const streak=calcStreak(st);
+  document.getElementById('stat-days').textContent=st.practiceLog.length;
+  document.getElementById('stat-phrases').textContent=st.done.length;
+  document.getElementById('stat-streak').textContent=streak;
+
+  const pct=Math.round(st.done.length/PHRASES.length*100);
+  document.getElementById('mastery-text').textContent=st.done.length+' / '+PHRASES.length;
+  document.getElementById('mastery-pct').textContent=pct+'%';
+  document.getElementById('mastery-bar').style.width=pct+'%';
+
+  const badgeRow=document.getElementById('badge-row');
+  badgeRow.innerHTML=BADGES.map(b=>{
+    const earned=st.earnedBadges.includes(b.id);
+    return`<div class="badge ${earned?'earned':''}">${b.icon} ${b.label}</div>`;
+  }).join('');
+
+  renderCalendar();
+  renderPhraseListDash();
+}
+
+function renderCalendar(){
+  const cal=document.getElementById('calendar');
+  const now=new Date();
+  const year=now.getFullYear(),month=now.getMonth();
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const todayS=now.toISOString().slice(0,10);
+  const days=['日','月','火','水','木','金','土'];
+  let html=days.map(d=>`<div class="cal-day-label">${d}</div>`).join('');
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const practiced=st.practiceLog.includes(ds);
+    const normaKey='norma_'+ds;
+    const normaOK=st.earnedBadges.includes(normaKey);
+    const cls=normaOK?'ok':practiced?'partial':'';
+    const todayCls=ds===todayS?' today':'';
+    html+=`<div class="cal-day ${cls}${todayCls}">${d}</div>`;
+  }
+  cal.innerHTML=html;
+}
+
+function renderPhraseListDash(){
+  document.getElementById('phrase-list-dash').innerHTML=PHRASES.map((p,i)=>{
+    const done=st.done.includes(i);
+    return`<div class="phrase-item ${done?'done':''}">
+      <div class="check">${done?'✓':''}</div>
+      <div class="ptext">${p.en}</div>
+      <div class="ptag">${p.cat}</div>
     </div>`;
-  msgs.scrollTop = msgs.scrollHeight;
+  }).join('');
 }
 
-function appendLoading() {
-  const msgs = document.getElementById('chat-msgs');
-  const id = 'load-'+Date.now();
-  msgs.innerHTML += `<div class="msg ai" id="${id}"><div class="msg-av">AI</div><div class="msg-right"><div class="msg-bub"><div class="dots"><span></span><span></span><span></span></div></div></div></div>`;
-  msgs.scrollTop = msgs.scrollHeight;
-  return id;
-}
-function removeLoading(id) { const el=document.getElementById(id); if(el) el.remove(); }
-function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
-
-document.getElementById('chat-input').addEventListener('keydown', e => {
-  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-});
-
-// ============================================================
-// INIT
-// ============================================================
-updateStreak();
-updateStats();
-renderFlashcards();
+checkDate();
+renderCats();
+renderPhrase();
+renderXP();
+renderGoals();
+checkBadges();
 </script>
-</body>
-</html>

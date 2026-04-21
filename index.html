@@ -2,22 +2,29 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 .app{font-family:var(--font-sans);max-width:480px;margin:0 auto;padding:0 0 80px;}
-.tab-bar{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--color-border-tertiary);}
-.tab{padding:14px 0;font-size:16px;color:var(--color-text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab-bar{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:0.5px solid var(--color-border-tertiary);}
+.tab{padding:13px 0;font-size:15px;color:var(--color-text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;text-align:center;}
 .tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary);font-weight:500;}
 .screen{display:none;padding:16px;}
 .screen.active{display:block;}
 
-.level-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-.level-badge{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);}
-.level-info{flex:1;min-width:0;}
-.level-name{font-size:16px;font-weight:500;color:var(--color-text-primary);}
-.level-sub{font-size:13px;color:var(--color-text-secondary);margin-top:2px;}
-.xp-bar-wrap{background:var(--color-background-secondary);border-radius:4px;height:6px;overflow:hidden;margin-top:7px;}
-.xp-bar-fill{height:100%;background:#FAC775;border-radius:4px;transition:width 0.5s;}
-.xp-badge{text-align:right;flex-shrink:0;}
-.xp-num{font-size:20px;font-weight:500;color:var(--color-text-primary);}
-.xp-lbl{font-size:12px;color:var(--color-text-secondary);}
+/* HOME */
+.hero-card{border-radius:20px;padding:20px;margin-bottom:14px;background:#E6F1FB;border:0.5px solid #B5D4F4;overflow:hidden;position:relative;}
+.hero-greeting{font-size:13px;color:#185FA5;margin-bottom:4px;font-weight:500;}
+.hero-title{font-size:22px;font-weight:500;color:#042C53;line-height:1.3;margin-bottom:16px;}
+.hero-svg{width:100%;height:120px;}
+
+.quote-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:16px;padding:18px;margin-bottom:14px;}
+.quote-label{font-size:12px;color:var(--color-text-tertiary);margin-bottom:8px;font-weight:500;letter-spacing:0.5px;}
+.quote-en{font-size:18px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:6px;}
+.quote-ja{font-size:14px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:12px;}
+.quote-explain{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:10px;}
+
+.home-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px;}
+.hstat{background:var(--color-background-secondary);border-radius:12px;padding:12px;}
+.hstat-lbl{font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;}
+.hstat-val{font-size:22px;font-weight:500;color:var(--color-text-primary);}
+.hstat-sub{font-size:11px;color:var(--color-text-tertiary);}
 
 .goal-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:16px;padding:16px;margin-bottom:14px;}
 .goal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
@@ -34,6 +41,20 @@
 .task-chip.done .chip-check{background:#1D9E75;border-color:#1D9E75;color:#fff;}
 .chip-xp{margin-left:auto;font-size:13px;color:#0F6E56;font-weight:500;}
 
+.start-btn{width:100%;padding:16px;font-size:16px;font-weight:500;border-radius:14px;border:none;background:var(--color-text-primary);color:var(--color-background-primary);cursor:pointer;margin-bottom:8px;}
+
+/* PRACTICE */
+.level-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.level-badge{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);}
+.level-info{flex:1;min-width:0;}
+.level-name{font-size:16px;font-weight:500;color:var(--color-text-primary);}
+.level-sub{font-size:13px;color:var(--color-text-secondary);margin-top:2px;}
+.xp-bar-wrap{background:var(--color-background-secondary);border-radius:4px;height:6px;overflow:hidden;margin-top:7px;}
+.xp-bar-fill{height:100%;background:#FAC775;border-radius:4px;transition:width 0.5s;}
+.xp-badge{text-align:right;flex-shrink:0;}
+.xp-num{font-size:20px;font-weight:500;color:var(--color-text-primary);}
+.xp-lbl{font-size:12px;color:var(--color-text-secondary);}
+
 .cat-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .cat-scroll::-webkit-scrollbar{display:none;}
 .cat-btn{padding:8px 16px;font-size:15px;border:0.5px solid var(--color-border-secondary);border-radius:20px;cursor:pointer;background:transparent;color:var(--color-text-secondary);white-space:nowrap;flex-shrink:0;}
@@ -44,13 +65,20 @@
 .nav-btn{padding:10px 18px;font-size:15px;border:0.5px solid var(--color-border-secondary);border-radius:10px;cursor:pointer;background:transparent;color:var(--color-text-primary);}
 
 .phrase-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:16px;padding:20px;margin-bottom:14px;}
-.phrase-tag{font-size:13px;color:var(--color-text-tertiary);margin-bottom:10px;}
-.phrase-en{font-size:20px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:8px;}
-.phrase-ja{font-size:15px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:18px;}
+.phrase-tag{font-size:13px;color:var(--color-text-tertiary);margin-bottom:6px;}
+.syntax-core{font-size:13px;font-weight:500;color:#185FA5;background:#E6F1FB;padding:5px 12px;border-radius:8px;display:inline-block;margin-bottom:12px;}
+.phrase-en{font-size:19px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:6px;}
+.phrase-ja{font-size:15px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:6px;}
+.phrase-explain{font-size:13px;color:var(--color-text-secondary);line-height:1.7;padding:10px 14px;background:var(--color-background-secondary);border-radius:10px;margin-bottom:16px;}
 
-.action-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.action-btn{padding:14px 0;font-size:15px;font-weight:500;border-radius:12px;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);text-align:center;transition:opacity 0.2s;}
-.action-btn:active{opacity:0.7;}
+.variants-label{font-size:13px;color:var(--color-text-tertiary);margin-bottom:8px;}
+.variant-item{padding:10px 14px;background:var(--color-background-secondary);border-radius:10px;margin-bottom:6px;cursor:pointer;border:0.5px solid transparent;}
+.variant-item:hover{border-color:var(--color-border-secondary);}
+.variant-en{font-size:14px;color:var(--color-text-primary);margin-bottom:2px;}
+.variant-ja{font-size:13px;color:var(--color-text-secondary);}
+
+.action-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.action-btn{padding:14px 0;font-size:15px;font-weight:500;border-radius:12px;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);text-align:center;}
 .action-btn.listen{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary);}
 .action-btn.shadow-btn{background:#185FA5;color:#fff;border-color:#185FA5;}
 .action-btn.shadow-btn.active-shadow{background:#E24B4A;border-color:#E24B4A;}
@@ -64,13 +92,9 @@
 .shadow-progress-fill{height:100%;background:#185FA5;border-radius:4px;transition:width 0.1s linear;}
 .shadow-word{font-size:18px;font-weight:500;color:#042C53;text-align:center;padding:6px 0;min-height:36px;}
 .shadow-hint{font-size:13px;color:#185FA5;text-align:center;}
+.feedback{min-height:36px;display:flex;align-items:center;gap:8px;margin-top:10px;font-size:15px;}
 
-.feedback{min-height:36px;display:flex;align-items:center;gap:8px;margin-top:12px;font-size:15px;}
-.tip-box{background:var(--color-background-secondary);border-radius:12px;padding:14px 16px;font-size:15px;color:var(--color-text-secondary);line-height:1.6;}
-
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--color-text-primary);color:var(--color-background-primary);padding:12px 22px;border-radius:12px;font-size:15px;font-weight:500;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:999;white-space:nowrap;pointer-events:none;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
+/* DASHBOARD */
 .stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px;}
 .stat-card{background:var(--color-background-secondary);border-radius:12px;padding:14px 12px;}
 .stat-lbl{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
@@ -102,17 +126,55 @@
 .phrase-row.done .pen{color:var(--color-text-secondary);}
 .pen{font-size:15px;color:var(--color-text-primary);line-height:1.5;flex:1;}
 .ptag{font-size:12px;color:var(--color-text-tertiary);margin-top:3px;}
+
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--color-text-primary);color:var(--color-background-primary);padding:12px 22px;border-radius:12px;font-size:15px;font-weight:500;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:999;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 
 <div class="app">
 <div id="toast" class="toast"></div>
 
 <div class="tab-bar">
-  <button class="tab active" onclick="switchTab('practice')">練習</button>
-  <button class="tab" onclick="switchTab('dashboard')">ダッシュボード</button>
+  <button class="tab active" onclick="switchTab('home')">ホーム</button>
+  <button class="tab" onclick="switchTab('practice')">練習</button>
+  <button class="tab" onclick="switchTab('dashboard')">記録</button>
 </div>
 
-<div id="screen-practice" class="screen active">
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <div class="hero-card">
+    <div class="hero-greeting" id="hero-greeting"></div>
+    <div class="hero-title" id="hero-title"></div>
+    <svg class="hero-svg" viewBox="0 0 440 120" xmlns="http://www.w3.org/2000/svg" id="hero-svg"></svg>
+  </div>
+
+  <div class="quote-card">
+    <div class="quote-label">TODAY'S PHRASE</div>
+    <div class="quote-en" id="home-quote-en"></div>
+    <div class="quote-ja" id="home-quote-ja"></div>
+    <div class="quote-explain" id="home-quote-explain"></div>
+  </div>
+
+  <div class="home-stats">
+    <div class="hstat"><div class="hstat-lbl">練習日数</div><div class="hstat-val" id="h-days">0</div><div class="hstat-sub">日</div></div>
+    <div class="hstat"><div class="hstat-lbl">習得済み</div><div class="hstat-val" id="h-phrases">0</div><div class="hstat-sub">/ 20</div></div>
+    <div class="hstat"><div class="hstat-lbl">連続</div><div class="hstat-val" id="h-streak">0</div><div class="hstat-sub">日</div></div>
+  </div>
+
+  <div class="goal-card">
+    <div class="goal-header">
+      <div class="goal-title">今日のノルマ</div>
+      <div class="goal-status" id="goal-status-home">0 / 3 完了</div>
+    </div>
+    <div class="daily-bar-wrap"><div class="daily-bar-fill" id="daily-bar-home" style="width:0%"></div></div>
+    <div class="task-chips" id="task-chips-home"></div>
+  </div>
+
+  <button class="start-btn" onclick="switchTab('practice')">今日の練習をはじめる</button>
+</div>
+
+<!-- PRACTICE -->
+<div id="screen-practice" class="screen">
   <div class="level-row">
     <div class="level-badge" id="lv-badge">🌱</div>
     <div class="level-info">
@@ -120,19 +182,7 @@
       <div class="level-sub">次のレベルまで <span id="xp-next">30</span> XP</div>
       <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xp-bar" style="width:0%"></div></div>
     </div>
-    <div class="xp-badge">
-      <div class="xp-num" id="xp-num">0</div>
-      <div class="xp-lbl">XP</div>
-    </div>
-  </div>
-
-  <div class="goal-card">
-    <div class="goal-header">
-      <div class="goal-title">今日のノルマ</div>
-      <div class="goal-status" id="goal-status">0 / 3 完了</div>
-    </div>
-    <div class="daily-bar-wrap"><div class="daily-bar-fill" id="daily-bar" style="width:0%"></div></div>
-    <div class="task-chips" id="task-chips"></div>
+    <div class="xp-badge"><div class="xp-num" id="xp-num">0</div><div class="xp-lbl">XP</div></div>
   </div>
 
   <div class="cat-scroll" id="cat-row"></div>
@@ -147,8 +197,12 @@
 
   <div class="phrase-card">
     <div class="phrase-tag" id="p-cat"></div>
+    <div class="syntax-core" id="p-syntax"></div>
     <div class="phrase-en" id="p-en"></div>
     <div class="phrase-ja" id="p-ja"></div>
+    <div class="phrase-explain" id="p-explain"></div>
+    <div class="variants-label">この構文で応用できる表現</div>
+    <div id="p-variants"></div>
     <div class="action-btns">
       <button class="action-btn listen" onclick="speak()">▶ 聞く  +3XP</button>
       <button class="action-btn shadow-btn" id="shadow-btn" onclick="toggleShadow()">◎ シャドーイング  +5XP</button>
@@ -158,14 +212,13 @@
       <div class="shadow-label">声に出して一緒に読んでください</div>
       <div class="shadow-progress"><div class="shadow-progress-fill" id="shadow-prog" style="width:0%"></div></div>
       <div class="shadow-word" id="shadow-word"></div>
-      <div class="shadow-hint" id="shadow-hint">準備できたらボタンを押してください</div>
+      <div class="shadow-hint" id="shadow-hint"></div>
     </div>
     <div class="feedback" id="feedback"></div>
   </div>
-
-  <div class="tip-box" id="tip-box"></div>
 </div>
 
+<!-- DASHBOARD -->
 <div id="screen-dashboard" class="screen">
   <div class="stats-grid">
     <div class="stat-card"><div class="stat-lbl">練習日数</div><div class="stat-val" id="s-days">0</div><div class="stat-sub">日</div></div>
@@ -179,34 +232,235 @@
   <div class="sec-title">習得状況</div>
   <div class="mastery-row"><span id="m-text">0 / 20</span><span id="m-pct">0%</span></div>
   <div class="prog-bar-wrap"><div class="prog-bar-fill" id="m-bar" style="width:0%"></div></div>
-  <div class="sec-title">フレーズ一覧</div>
+  <div class="sec-title">構文一覧</div>
   <div class="phrase-list" id="phrase-list"></div>
 </div>
 </div>
 
 <script>
-const PHRASES=[
-  {en:"My read on this is that the data issue is the root cause.",ja:"私の見方では、データの問題が根本原因です。",cat:"意見を述べる",tip:"My read on this is... の後に自分の考えを続けるだけ。"},
-  {en:"The way I see it, we need to reframe the problem first.",ja:"私としては、まず問題を再定義する必要があります。",cat:"意見を述べる",tip:"The way I see it は柔らかく意見を述べる定番表現。"},
-  {en:"I'd push back slightly on that—the issue isn't adoption.",ja:"少し反論させてください。問題は導入ではありません。",cat:"反論する",tip:"I'd push back... の後に理由を続けると自然な反論に。"},
-  {en:"I'm not fully convinced yet—can we look at the data?",ja:"まだ完全には納得できていません。データを確認できますか？",cat:"反論する",tip:"強く否定せず、データで確認する姿勢が示せる表現。"},
-  {en:"Let me try to frame the problem here.",ja:"ここで問題を整理させてください。",cat:"議論を整理する",tip:"議論が散漫なときに使うと主導権を持てます。"},
-  {en:"Before we go further, can we agree on what success looks like?",ja:"先に進む前に、成功の定義を合意できますか？",cat:"議論を整理する",tip:"コンサル的な問いかけ。ゴール確認の場面で有効。"},
-  {en:"The core question we're trying to answer is—does everyone agree?",ja:"我々が答えようとしている核心の問いは何か—皆さん同意できますか？",cat:"議論を整理する",tip:"The core question is... で議論の焦点を一本化できます。"},
-  {en:"Can you walk me through the rationale?",ja:"その根拠を説明していただけますか？",cat:"質問・確認",tip:"Walk me through... は「順を追って説明して」という依頼表現。"},
-  {en:"What's driving that assumption?",ja:"その前提の根拠は何ですか？",cat:"質問・確認",tip:"前提を問う鋭い質問。コンサルらしい表現。"},
-  {en:"Just to make sure I'm following—are you saying we should pivot?",ja:"確認ですが、方向転換すべきということでしょうか？",cat:"質問・確認",tip:"Just to make sure I'm following... は誤解を防ぐ丁寧な確認表現。"},
-  {en:"Let me think about how that maps to what we found.",ja:"それが私たちの発見とどう関連するか考えさせてください。",cat:"時間を稼ぐ",tip:"沈黙を避けながら考える時間を作れる便利な表現。"},
-  {en:"That's a fair point—let me come back to it.",ja:"良い指摘です。後でその点に戻ります。",cat:"時間を稼ぐ",tip:"即答できないときに使える。後で必ず戻るのがポイント。"},
-  {en:"The bottom line is that we need to act this quarter.",ja:"結論として、今四半期中に行動する必要があります。",cat:"結論を言う",tip:"The bottom line is... はコンサルでよく使われる締めの表現。"},
-  {en:"Net-net, what this tells us is we should proceed with phase two.",ja:"総括すると、フェーズ2に進むべきということです。",cat:"結論を言う",tip:"Net-net はコンサル・外資系で頻出の「つまるところ」という意味。"},
-  {en:"Based on what I've seen in similar engagements, the pattern is clear.",ja:"類似案件での経験からすると、パターンは明確です。",cat:"経験を引用する",tip:"自分の経験に基づく意見を示す。信頼性が上がります。"},
-  {en:"Our recommendation is to proceed with a phased approach—here's the rationale.",ja:"段階的アプローチで進めることを推薦します。根拠は以下の通りです。",cat:"推薦・提案",tip:"Our recommendation is... の後に根拠を続ける定番構造。"},
-  {en:"We're on track to deliver the roadmap by end of month.",ja:"月末までにロードマップを納品できる見込みです。",cat:"進捗報告",tip:"On track to... は「予定通り進んでいる」という報告表現。"},
-  {en:"We've hit a dependency on the client's IT team—it's on our risk log.",ja:"クライアントのITチームへの依存が生じており、リスクログに記録しています。",cat:"進捗報告",tip:"問題を報告しつつ、管理できていることも示せます。"},
-  {en:"I specialize in enterprise DX, working primarily with financial services clients.",ja:"金融サービス企業を主な対象として、エンタープライズDXを専門にしています。",cat:"自己紹介",tip:"I specialize in... で専門性を簡潔に伝えられます。"},
-  {en:"What I bring to the table is the ability to structure ambiguous problems.",ja:"私が提供できる価値は、曖昧な問題を構造化する能力です。",cat:"自己紹介",tip:"What I bring to the table は強みを伝える定番フレーズ。"}
+const PHRASES = [
+  {
+    cat:"意見を言う",
+    syntax:"I think that + [文]",
+    en:"I think that we should prioritize this project.",
+    ja:"このプロジェクトを優先すべきだと思います。",
+    explain:"最もシンプルな意見表明の構文。that以下に「自分が思うこと」を何でも入れられます。I believe / I feel / I findに替えると微妙にニュアンスが変わります。",
+    variants:[
+      {en:"I believe that the current approach needs to change.", ja:"現在のアプローチを変える必要があると思います。"},
+      {en:"I feel that we're moving in the right direction.", ja:"正しい方向に進んでいると感じます。"}
+    ]
+  },
+  {
+    cat:"意見を言う",
+    syntax:"What I + [動詞] + is...",
+    en:"What I think is that the root cause is unclear.",
+    ja:"私が思うのは、根本原因が不明確だということです。",
+    explain:"What I think / find / see / need / want... という形で強調した意見を述べる構文。文頭に「私が思うことは」と置くことで、主張が際立ちます。",
+    variants:[
+      {en:"What I find most interesting is the gap in the data.", ja:"最も興味深いのはデータのギャップです。"},
+      {en:"What I need is more time to analyze this.", ja:"私が必要なのは分析する時間です。"}
+    ]
+  },
+  {
+    cat:"意見を言う",
+    syntax:"To me, + [文]",
+    en:"To me, the real issue is stakeholder alignment.",
+    ja:"私には、本当の問題はステークホルダーの合意形成だと思います。",
+    explain:"「私にとっては」という視点を冒頭に置くことで、個人的な見解であることを示しながら意見を述べる表現。柔らかく、でも明確。",
+    variants:[
+      {en:"To me, this is the most critical decision we'll make.", ja:"私には、これが最も重要な決断だと思います。"},
+      {en:"To me, the data tells a very different story.", ja:"私には、データはまったく異なる話を示しています。"}
+    ]
+  },
+  {
+    cat:"理由を述べる",
+    syntax:"... because + [文]",
+    en:"We should move forward because the data supports it.",
+    ja:"データが裏付けているので、前進すべきです。",
+    explain:"最も基本的な理由説明の構文。because以下に理由を入れるだけ。文末でも文頭（Because..., we...）でも使えます。",
+    variants:[
+      {en:"I'd recommend this approach because it reduces risk.", ja:"リスクを減らすため、このアプローチを推奨します。"},
+      {en:"We're seeing delays because the requirements changed.", ja:"要件が変わったため、遅延が生じています。"}
+    ]
+  },
+  {
+    cat:"理由を述べる",
+    syntax:"The reason is that + [文]",
+    en:"The reason is that we don't have enough data yet.",
+    ja:"理由は、まだ十分なデータがないからです。",
+    explain:"理由を明示的に述べる構文。「なぜそう思うのか」を問われたときや、自分から根拠を示したいときに使います。",
+    variants:[
+      {en:"The reason I'm cautious is that the market is volatile.", ja:"私が慎重なのは、市場が不安定だからです。"},
+      {en:"The reason this matters is that it affects the timeline.", ja:"これが重要な理由は、スケジュールに影響するからです。"}
+    ]
+  },
+  {
+    cat:"条件・仮定",
+    syntax:"If we + [動詞], we can + [動詞]",
+    en:"If we start now, we can meet the deadline.",
+    ja:"今始めれば、締め切りに間に合います。",
+    explain:"条件と結果をセットで述べる基本構文。「もし〜すれば、〜できる」という論理的な提案に使えます。",
+    variants:[
+      {en:"If we align on the scope, we can move faster.", ja:"スコープを合意できれば、より速く進められます。"},
+      {en:"If we reduce complexity, we can lower the cost.", ja:"複雑さを減らせば、コストを下げられます。"}
+    ]
+  },
+  {
+    cat:"条件・仮定",
+    syntax:"Assuming that + [文], I think...",
+    en:"Assuming that the budget is approved, I think we can launch in Q2.",
+    ja:"予算が承認されると仮定すると、Q2にローンチできると思います。",
+    explain:"前提条件を明示した上で意見を述べる構文。不確実な状況での議論でよく使います。",
+    variants:[
+      {en:"Assuming that the data is accurate, the trend is clear.", ja:"データが正確だと仮定すると、トレンドは明確です。"},
+      {en:"Assuming we stay on schedule, this should work.", ja:"スケジュール通りなら、うまくいくはずです。"}
+    ]
+  },
+  {
+    cat:"比較・対比",
+    syntax:"Compared to + [名詞], + [文]",
+    en:"Compared to last quarter, performance has improved significantly.",
+    ja:"前四半期と比べると、パフォーマンスは大きく改善しました。",
+    explain:"何かと比較して状況を説明する構文。数字や事実を伝えるときに説得力が増します。",
+    variants:[
+      {en:"Compared to competitors, our cost structure is lean.", ja:"競合他社と比べると、コスト構造はスリムです。"},
+      {en:"Compared to the original plan, we're two weeks ahead.", ja:"元の計画と比べると、2週間先行しています。"}
+    ]
+  },
+  {
+    cat:"比較・対比",
+    syntax:"Rather than + [動詞ing], we should + [動詞]",
+    en:"Rather than reacting, we should be more proactive.",
+    ja:"対応するだけでなく、もっと積極的に動くべきです。",
+    explain:"「〜するのではなく、〜すべきだ」という対比的な提案の構文。現状批判と改善案をセットで示せます。",
+    variants:[
+      {en:"Rather than expanding scope, we should focus on quality.", ja:"スコープを広げるより、品質に集中すべきです。"},
+      {en:"Rather than adding resources, we should simplify the process.", ja:"リソースを追加するより、プロセスを単純化すべきです。"}
+    ]
+  },
+  {
+    cat:"確認・共有",
+    syntax:"Does that make sense?",
+    en:"We'll take a phased approach starting in April. Does that make sense?",
+    ja:"4月から段階的なアプローチを取ります。よろしいでしょうか？",
+    explain:"説明した後に相手の理解を確認する定番表現。「理解できましたか？」という意味で、プレゼンや会議の節目に自然に使えます。",
+    variants:[
+      {en:"I'll handle the client side. Does that work for you?", ja:"クライアント側は私が担当します。それでよろしいですか？"},
+      {en:"Let me summarize what we agreed on. Does that sound right?", ja:"合意内容を整理します。正しいですか？"}
+    ]
+  },
+  {
+    cat:"確認・共有",
+    syntax:"Would you agree that + [文]?",
+    en:"Would you agree that we need a clearer timeline?",
+    ja:"より明確なタイムラインが必要だと思いませんか？",
+    explain:"相手に同意を求める丁寧な構文。Yes/Noで答えられるシンプルな確認として使えます。",
+    variants:[
+      {en:"Would you agree that this is the biggest risk?", ja:"これが最大のリスクだと思いませんか？"},
+      {en:"Would you agree that we should revisit this assumption?", ja:"この前提を見直すべきだと思いませんか？"}
+    ]
+  },
+  {
+    cat:"反論・留保",
+    syntax:"I understand that..., but + [文]",
+    en:"I understand that speed is important, but quality matters too.",
+    ja:"スピードが大事なのはわかりますが、品質も重要です。",
+    explain:"相手の意見を認めた上で反論する構文。「but」の前で一度受け止めることで、角が立たずに反論できます。",
+    variants:[
+      {en:"I understand the urgency, but we need more analysis.", ja:"緊急性はわかりますが、もう少し分析が必要です。"},
+      {en:"I understand the concern, but the data says otherwise.", ja:"懸念はわかりますが、データは異なることを示しています。"}
+    ]
+  },
+  {
+    cat:"反論・留保",
+    syntax:"I'm not sure + [文/if/whether]",
+    en:"I'm not sure that this approach will work in our context.",
+    ja:"このアプローチが私たちの状況でうまくいくか確信が持てません。",
+    explain:"強く否定せず、疑問を示す構文。「確信が持てない」という形で柔らかく反論や懸念を伝えられます。",
+    variants:[
+      {en:"I'm not sure if we have enough data to decide.", ja:"決断するのに十分なデータがあるか確信がありません。"},
+      {en:"I'm not sure whether this aligns with our strategy.", ja:"これが戦略と合致するかどうか確信が持てません。"}
+    ]
+  },
+  {
+    cat:"提案する",
+    syntax:"Why don't we + [動詞]?",
+    en:"Why don't we start with a small pilot?",
+    ja:"小さなパイロットから始めませんか？",
+    explain:"提案を「なぜ〜しないのか」という形で述べる自然な表現。命令ではなく提案として伝わるので、会議での発言に適しています。",
+    variants:[
+      {en:"Why don't we set a deadline for this decision?", ja:"この決断に期限を設けませんか？"},
+      {en:"Why don't we check in again next week?", ja:"来週もう一度確認しませんか？"}
+    ]
+  },
+  {
+    cat:"提案する",
+    syntax:"It might be worth + [動詞ing]",
+    en:"It might be worth revisiting the assumptions.",
+    ja:"前提を見直してみる価値があるかもしれません。",
+    explain:"強い提案ではなく「〜してみる価値があるかも」という柔らかい提案。相手に選択の余地を残しながら意見を述べたいときに使います。",
+    variants:[
+      {en:"It might be worth getting a second opinion.", ja:"セカンドオピニオンを得る価値があるかもしれません。"},
+      {en:"It might be worth delaying the launch by one week.", ja:"ローンチを1週間遅らせる価値があるかもしれません。"}
+    ]
+  },
+  {
+    cat:"まとめる",
+    syntax:"So what we're saying is + [文]",
+    en:"So what we're saying is that we need more time and resources.",
+    ja:"つまり私たちが言っているのは、時間とリソースがもっと必要だということです。",
+    explain:"議論をまとめるときの定番構文。「So, in other words...」と同じ役割。会議の終盤や長い議論を整理するときに使います。",
+    variants:[
+      {en:"So what we're agreeing on is a phased approach.", ja:"つまり私たちが合意しているのは段階的なアプローチです。"},
+      {en:"So what this means is we need to reprioritize.", ja:"つまりこれが意味するのは、優先順位を見直す必要があるということです。"}
+    ]
+  },
+  {
+    cat:"まとめる",
+    syntax:"The key takeaway is + [名詞/that + 文]",
+    en:"The key takeaway is that customer data is our biggest asset.",
+    ja:"重要な結論は、顧客データが最大の資産だということです。",
+    explain:"プレゼンや会議の締めに使う構文。「一番伝えたいこと」を明示します。The bottom line is...と似ていますが、より学びや洞察のニュアンスがあります。",
+    variants:[
+      {en:"The key takeaway from this project is speed matters.", ja:"このプロジェクトの重要な教訓はスピードが重要だということです。"},
+      {en:"The key takeaway is that we need better alignment upfront.", ja:"重要な結論は、最初からより良い合意形成が必要だということです。"}
+    ]
+  },
+  {
+    cat:"時間を稼ぐ",
+    syntax:"That's a good point. Let me + [動詞]",
+    en:"That's a good point. Let me think about that for a moment.",
+    ja:"良い指摘ですね。少し考えさせてください。",
+    explain:"即答できないときに時間を稼ぐ表現。相手の発言を肯定してから考える間を作ることで、沈黙を自然につなぎます。",
+    variants:[
+      {en:"That's a good point. Let me check and get back to you.", ja:"良い指摘です。確認して後ほど連絡します。"},
+      {en:"That's a fair question. Let me make sure I answer it properly.", ja:"良い質問です。きちんと答えられるよう整理させてください。"}
+    ]
+  },
+  {
+    cat:"時間を稼ぐ",
+    syntax:"Can I just clarify + [疑問文]?",
+    en:"Can I just clarify what you mean by that?",
+    ja:"それはどういう意味か確認してもよいですか？",
+    explain:"相手の発言が理解できなかったとき、または確認したいときに使う表現。「聞き返す」のではなく「確認する」として自然に使えます。",
+    variants:[
+      {en:"Can I just clarify the timeline you have in mind?", ja:"想定しているタイムラインを確認してもよいですか？"},
+      {en:"Can I just clarify who owns this decision?", ja:"この決断の責任者が誰か確認してもよいですか？"}
+    ]
+  },
+  {
+    cat:"自己紹介",
+    syntax:"My background is in + [分野]",
+    en:"My background is in enterprise DX and marketing strategy.",
+    ja:"私のバックグラウンドはエンタープライズDXとマーケティング戦略です。",
+    explain:"自分の専門領域を伝えるシンプルな構文。I specialize in...より少しカジュアルで、会話の流れの中で使いやすいです。",
+    variants:[
+      {en:"My background is in data analytics and customer insights.", ja:"私のバックグラウンドはデータ分析と顧客インサイトです。"},
+      {en:"My background is in consulting, primarily in financial services.", ja:"私のバックグラウンドはコンサルで、主に金融サービスです。"}
+    ]
+  }
 ];
+
 const LEVELS=[
   {min:0,max:29,name:"Lv.1 — Beginner",icon:"🌱"},
   {min:30,max:79,name:"Lv.2 — Learner",icon:"📖"},
@@ -217,12 +471,12 @@ const LEVELS=[
 ];
 const BADGES=[
   {id:"first_listen",icon:"👂",name:"はじめの一聴"},
-  {id:"first_shadow",icon:"🗣️",name:"シャドーイング初挑戦"},
+  {id:"first_shadow",icon:"🗣",name:"シャドーイング初挑戦"},
   {id:"streak3",icon:"🔥",name:"3日連続"},
   {id:"streak7",icon:"⚡",name:"1週間継続"},
-  {id:"phrases5",icon:"💪",name:"5フレーズ習得"},
+  {id:"phrases5",icon:"💪",name:"5構文習得"},
   {id:"phrases10",icon:"🎯",name:"半分制覇"},
-  {id:"phrases20",icon:"🏆",name:"全フレーズ習得"},
+  {id:"phrases20",icon:"🏆",name:"全構文習得"},
   {id:"norma7",icon:"📅",name:"週間ノルマ達成"}
 ];
 const TASKS=[
@@ -230,22 +484,60 @@ const TASKS=[
   {id:"shadow",label:"シャドーイングをする",xp:5},
   {id:"mastered",label:"できた！を押す",xp:7}
 ];
+
+const DAILY_MESSAGES=[
+  {greeting:"Good morning!", title:"今日も一つ、型を体に入れよう。", svg:"office"},
+  {greeting:"Ready to grow?", title:"小さな積み重ねが、会議での自信になる。", svg:"chart"},
+  {greeting:"Let's do this!", title:"昨日より一歩、英語が口から出やすくなる。", svg:"speech"},
+  {greeting:"Good morning!", title:"構文を覚えれば、単語を変えるだけで話せる。", svg:"office"},
+  {greeting:"Time to practice!", title:"今日の5分が、本番での10秒を作る。", svg:"chart"},
+  {greeting:"You've got this!", title:"型さえあれば、英語は怖くない。", svg:"speech"},
+  {greeting:"Let's build fluency!", title:"毎日続けることが最強のトレーニング。", svg:"office"}
+];
+
+const SVGS={
+  office:`<rect x="60" y="30" width="320" height="80" rx="8" fill="#B5D4F4"/>
+    <rect x="80" y="45" width="60" height="50" rx="4" fill="#fff" opacity="0.8"/>
+    <rect x="155" y="55" width="80" height="40" rx="4" fill="#fff" opacity="0.8"/>
+    <rect x="250" y="40" width="110" height="55" rx="4" fill="#fff" opacity="0.8"/>
+    <circle cx="110" cy="22" r="12" fill="#185FA5"/>
+    <rect x="104" y="34" width="12" height="16" rx="2" fill="#185FA5"/>
+    <circle cx="195" cy="25" r="12" fill="#378ADD"/>
+    <rect x="189" y="37" width="12" height="18" rx="2" fill="#378ADD"/>
+    <circle cx="305" cy="20" r="12" fill="#0C447C"/>
+    <rect x="299" y="32" width="12" height="18" rx="2" fill="#0C447C"/>`,
+  chart:`<polyline points="40,90 100,65 170,75 240,40 310,50 380,20" stroke="#185FA5" stroke-width="3" fill="none"/>
+    <polyline points="40,90 100,65 170,75 240,40 310,50 380,20 380,110 40,110" fill="#B5D4F4" opacity="0.4"/>
+    <circle cx="100" cy="65" r="5" fill="#185FA5"/>
+    <circle cx="170" cy="75" r="5" fill="#185FA5"/>
+    <circle cx="240" cy="40" r="7" fill="#042C53"/>
+    <circle cx="310" cy="50" r="5" fill="#185FA5"/>
+    <circle cx="380" cy="20" r="5" fill="#185FA5"/>
+    <line x1="40" y1="110" x2="400" y2="110" stroke="#B5D4F4" stroke-width="1"/>`,
+  speech:`<rect x="50" y="20" width="180" height="60" rx="12" fill="#185FA5"/>
+    <polygon points="80,80 110,80 95,100" fill="#185FA5"/>
+    <rect x="58" y="32" width="100" height="8" rx="4" fill="#fff" opacity="0.9"/>
+    <rect x="58" y="48" width="70" height="8" rx="4" fill="#fff" opacity="0.6"/>
+    <rect x="210" y="50" width="160" height="55" rx="12" fill="#B5D4F4"/>
+    <polygon points="330,105 360,105 345,118" fill="#B5D4F4"/>
+    <rect x="220" y="62" width="90" height="7" rx="3" fill="#185FA5" opacity="0.7"/>
+    <rect x="220" y="76" width="60" height="7" rx="3" fill="#185FA5" opacity="0.5"/>`
+};
+
 const CATS=["全て",...new Set(PHRASES.map(p=>p.cat))];
 
-function load(){try{return JSON.parse(localStorage.getItem('engapp_v4')||'null')||def();}catch(e){return def();}}
+function load(){try{return JSON.parse(localStorage.getItem('engapp_v5')||'null')||def();}catch(e){return def();}}
 function def(){return{xp:0,done:[],log:{},badges:[],cat:"全て",idx:0};}
-function save(){try{localStorage.setItem('engapp_v4',JSON.stringify(st));}catch(e){}}
+function save(){try{localStorage.setItem('engapp_v5',JSON.stringify(st));}catch(e){}}
 
 let st=load();
 if(!Array.isArray(st.done))st.done=[];
 if(!st.log||typeof st.log!=='object')st.log={};
 if(!Array.isArray(st.badges))st.badges=[];
-
-let shadowActive=false, shadowTimer=null, shadowWordIdx=0, shadowWords=[];
+let shadowActive=false,shadowTimer=null;
 
 function today(){return new Date().toISOString().slice(0,10);}
 function todayLog(){const t=today();if(!st.log[t])st.log[t]={tasks:[],norma:false};return st.log[t];}
-
 function getLv(xp){return LEVELS.find(l=>xp>=l.min&&xp<=l.max)||LEVELS[LEVELS.length-1];}
 
 function addXP(n){
@@ -253,7 +545,6 @@ function addXP(n){
   const nw=getLv(st.xp);save();renderXP();
   if(nw.name!==old.name)showToast("レベルアップ！ "+nw.name);
 }
-
 function renderXP(){
   const lv=getLv(st.xp);
   document.getElementById('lv-badge').textContent=lv.icon;
@@ -264,24 +555,7 @@ function renderXP(){
     const pct=Math.round((st.xp-lv.min)/(nx.min-lv.min)*100);
     document.getElementById('xp-bar').style.width=pct+'%';
     document.getElementById('xp-next').textContent=nx.min-st.xp;
-  }else{
-    document.getElementById('xp-bar').style.width='100%';
-  }
-}
-
-function renderGoal(){
-  const log=todayLog();const done=log.tasks||[];
-  const comp=TASKS.filter(t=>done.includes(t.id)).length;
-  const pct=Math.round(comp/TASKS.length*100);const ok=comp>=TASKS.length;
-  const gs=document.getElementById('goal-status');
-  gs.textContent=ok?"✓ 今日のノルマ達成！":comp+" / "+TASKS.length+" 完了";
-  gs.className='goal-status'+(ok?' ok':'');
-  const bar=document.getElementById('daily-bar');
-  bar.style.width=pct+'%';bar.className='daily-bar-fill'+(ok?' complete':'');
-  document.getElementById('task-chips').innerHTML=TASKS.map(t=>{
-    const d=done.includes(t.id);
-    return`<div class="task-chip ${d?'done':''}"><div class="chip-check">${d?'✓':''}</div><span>${t.label}</span><span class="chip-xp">+${t.xp}XP</span></div>`;
-  }).join('');
+  }else{document.getElementById('xp-bar').style.width='100%';}
 }
 
 function doTask(id){
@@ -292,7 +566,25 @@ function doTask(id){
   if(log.tasks.length>=TASKS.length&&!log.norma){
     log.norma=true;showToast("ノルマ達成！ ボーナス +5XP");addXP(5);checkBadge('norma7');
   }
-  save();renderGoal();
+  save();renderGoalAll();
+}
+
+function renderGoalAll(){renderGoal('home');}
+function renderGoal(suffix){
+  const log=todayLog();const done=log.tasks||[];
+  const comp=TASKS.filter(t=>done.includes(t.id)).length;
+  const pct=Math.round(comp/TASKS.length*100);const ok=comp>=TASKS.length;
+  const gs=document.getElementById('goal-status-'+suffix);
+  if(!gs)return;
+  gs.textContent=ok?"✓ 今日のノルマ達成！":comp+" / "+TASKS.length+" 完了";
+  gs.className='goal-status'+(ok?' ok':'');
+  const bar=document.getElementById('daily-bar-'+suffix);
+  if(bar){bar.style.width=pct+'%';bar.className='daily-bar-fill'+(ok?' complete':'');}
+  const chips=document.getElementById('task-chips-'+suffix);
+  if(chips)chips.innerHTML=TASKS.map(t=>{
+    const d=done.includes(t.id);
+    return`<div class="task-chip ${d?'done':''}"><div class="chip-check">${d?'✓':''}</div><span>${t.label}</span><span class="chip-xp">+${t.xp}XP</span></div>`;
+  }).join('');
 }
 
 function streak(){
@@ -303,12 +595,10 @@ function streak(){
     if(st.log[k]&&st.log[k].tasks&&st.log[k].tasks.length>0)s++;else break;
   }return s;
 }
-
 function checkBadge(id){
   if(st.badges.includes(id))return;
   let ok=false;
-  if(id==='first_listen')ok=true;
-  if(id==='first_shadow')ok=true;
+  if(id==='first_listen'||id==='first_shadow')ok=true;
   if(id==='streak3')ok=streak()>=3;
   if(id==='streak7')ok=streak()>=7;
   if(id==='phrases5')ok=st.done.length>=5;
@@ -317,21 +607,39 @@ function checkBadge(id){
   if(id==='norma7')ok=Object.values(st.log).filter(d=>d.norma).length>=7;
   if(ok){st.badges.push(id);save();const b=BADGES.find(x=>x.id===id);if(b)showToast("バッジ獲得："+b.name);}
 }
-
 function showToast(msg){
   const el=document.getElementById('toast');
   el.textContent=msg;el.classList.add('show');
   setTimeout(()=>el.classList.remove('show'),2800);
 }
 
-function filtered(){return st.cat==="全て"?PHRASES:PHRASES.filter(p=>p.cat===st.cat);}
+function renderHome(){
+  const dow=new Date().getDay();
+  const msg=DAILY_MESSAGES[dow];
+  document.getElementById('hero-greeting').textContent=msg.greeting;
+  document.getElementById('hero-title').textContent=msg.title;
+  document.getElementById('hero-svg').innerHTML=SVGS[msg.svg];
 
+  const doy=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/(1000*60*60*24));
+  const p=PHRASES[doy%PHRASES.length];
+  document.getElementById('home-quote-en').textContent=p.en;
+  document.getElementById('home-quote-ja').textContent=p.ja;
+  document.getElementById('home-quote-explain').textContent='構文: '+p.syntax+' — '+p.explain.split('。')[0]+'。';
+
+  const s=streak();
+  const days=Object.keys(st.log).filter(k=>st.log[k].tasks&&st.log[k].tasks.length>0).length;
+  document.getElementById('h-days').textContent=days;
+  document.getElementById('h-phrases').textContent=st.done.length;
+  document.getElementById('h-streak').textContent=s;
+  renderGoal('home');
+}
+
+function filtered(){return st.cat==="全て"?PHRASES:PHRASES.filter(p=>p.cat===st.cat);}
 function renderCats(){
   document.getElementById('cat-row').innerHTML=CATS.map(c=>
     `<button class="cat-btn ${c===st.cat?'active':''}" onclick="setCat('${c}')">${c}</button>`
   ).join('');
 }
-
 function setCat(c){st.cat=c;st.idx=0;stopShadow();renderCats();renderPhrase();}
 function prevP(){const l=filtered();st.idx=(st.idx-1+l.length)%l.length;stopShadow();renderPhrase();}
 function nextP(){const l=filtered();st.idx=(st.idx+1)%l.length;stopShadow();renderPhrase();}
@@ -340,49 +648,58 @@ function renderPhrase(){
   const list=filtered();if(!list.length)return;
   const p=list[st.idx];
   document.getElementById('p-cat').textContent=p.cat;
+  document.getElementById('p-syntax').textContent=p.syntax;
   document.getElementById('p-en').textContent=p.en;
   document.getElementById('p-ja').textContent=p.ja;
-  document.getElementById('tip-box').textContent='💡 '+p.tip;
+  document.getElementById('p-explain').textContent=p.explain;
   document.getElementById('prog-text').textContent=(st.idx+1)+' / '+list.length;
   document.getElementById('feedback').innerHTML='';
+  document.getElementById('p-variants').innerHTML=`<div class="variants-label">応用例</div>`+
+    p.variants.map(v=>`<div class="variant-item" onclick="speakText('${v.en.replace(/'/g,"\\'")}')">
+      <div class="variant-en">${v.en}</div>
+      <div class="variant-ja">${v.ja}</div>
+    </div>`).join('');
   const gi=PHRASES.indexOf(p);
   const db=document.getElementById('done-btn');
   if(st.done.includes(gi)){db.textContent='✓ 習得済み';db.classList.add('mastered');}
   else{db.textContent='✓ できた！  +7XP';db.classList.remove('mastered');}
 }
 
+function speakText(text){
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=0.85;speechSynthesis.cancel();speechSynthesis.speak(u);
+}
 function speak(){
   const p=filtered()[st.idx];
-  const u=new SpeechSynthesisUtterance(p.en);
-  u.lang='en-US';u.rate=0.85;
-  speechSynthesis.cancel();speechSynthesis.speak(u);
+  speakText(p.en);
   doTask('listen');checkBadge('first_listen');
 }
 
-function toggleShadow(){
-  if(shadowActive){stopShadow();}else{startShadow();}
-}
-
+function toggleShadow(){if(shadowActive)stopShadow();else startShadow();}
 function startShadow(){
   const p=filtered()[st.idx];
-  shadowWords=p.en.split(' ');
-  shadowWordIdx=0;shadowActive=true;
+  shadowActive=true;
   const btn=document.getElementById('shadow-btn');
   btn.textContent='■ 停止';btn.classList.add('active-shadow');
   const box=document.getElementById('shadow-box');
   box.classList.add('visible');
   document.getElementById('shadow-hint').textContent='声に出して一緒に読んでください';
   doTask('shadow');checkBadge('first_shadow');
-
   speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(p.en);
   u.lang='en-US';u.rate=0.75;
-  let charIdx=0;
+  const words=p.en.split(' ');
   u.onboundary=function(e){
     if(e.name==='word'){
-      const wordNum=p.en.substring(0,e.charIndex).split(' ').filter(w=>w.length>0).length;
-      shadowWordIdx=wordNum;
-      updateShadowDisplay();
+      const wi=p.en.substring(0,e.charIndex).split(' ').filter(w=>w.length>0).length;
+      const pct=Math.round(wi/words.length*100);
+      document.getElementById('shadow-prog').style.width=pct+'%';
+      const from=Math.max(0,wi-1);const to=Math.min(words.length,wi+3);
+      document.getElementById('shadow-word').innerHTML=words.map((w,i)=>{
+        if(i<wi)return`<span style="color:#9FE1CB;">${w}</span>`;
+        if(i===wi)return`<span style="color:#042C53;font-weight:500;font-size:22px;">${w}</span>`;
+        return`<span style="color:#85B7EB;">${w}</span>`;
+      }).slice(from,to).join(' ');
     }
   };
   u.onend=function(){
@@ -396,38 +713,19 @@ function startShadow(){
     },300);
   };
   speechSynthesis.speak(u);
-  updateShadowDisplay();
 }
-
-function updateShadowDisplay(){
-  const total=shadowWords.length;
-  const pct=Math.round((shadowWordIdx/total)*100);
-  document.getElementById('shadow-prog').style.width=pct+'%';
-  const from=Math.max(0,shadowWordIdx-1);
-  const to=Math.min(total,shadowWordIdx+3);
-  const parts=shadowWords.map((w,i)=>{
-    if(i<shadowWordIdx)return`<span style="color:#9FE1CB;">${w}</span>`;
-    if(i===shadowWordIdx)return`<span style="color:#042C53;font-weight:500;font-size:22px;">${w}</span>`;
-    return`<span style="color:#85B7EB;">${w}</span>`;
-  });
-  document.getElementById('shadow-word').innerHTML=parts.slice(from,to).join(' ');
-}
-
 function stopShadow(){
   speechSynthesis.cancel();shadowActive=false;
-  if(shadowTimer){clearTimeout(shadowTimer);shadowTimer=null;}
   const btn=document.getElementById('shadow-btn');
   if(btn){btn.textContent='◎ シャドーイング  +5XP';btn.classList.remove('active-shadow');}
   const box=document.getElementById('shadow-box');
   if(box)box.classList.remove('visible');
 }
-
 function markDone(){
   const p=filtered()[st.idx];const gi=PHRASES.indexOf(p);
   if(st.done.includes(gi))return;
-  st.done.push(gi);save();
-  doTask('mastered');
-  checkBadge('first_shadow');checkBadge('phrases5');checkBadge('phrases10');checkBadge('phrases20');checkBadge('streak3');checkBadge('streak7');
+  st.done.push(gi);save();doTask('mastered');
+  checkBadge('phrases5');checkBadge('phrases10');checkBadge('phrases20');checkBadge('streak3');checkBadge('streak7');
   const fb=document.getElementById('feedback');
   fb.innerHTML='<span style="color:#1D9E75;font-weight:500;">✓ 習得済みに記録 +7XP</span>';
   setTimeout(()=>{fb.innerHTML='';renderPhrase();},1500);
@@ -435,10 +733,13 @@ function markDone(){
 
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>{
-    el.classList.toggle('active',(i===0&&t==='practice')||(i===1&&t==='dashboard'));
+    const tabs=['home','practice','dashboard'];
+    el.classList.toggle('active',tabs[i]===t);
   });
-  document.getElementById('screen-practice').classList.toggle('active',t==='practice');
-  document.getElementById('screen-dashboard').classList.toggle('active',t==='dashboard');
+  ['home','practice','dashboard'].forEach(id=>{
+    document.getElementById('screen-'+id).classList.toggle('active',id===t);
+  });
+  if(t==='home')renderHome();
   if(t==='dashboard')renderDash();
 }
 
@@ -471,9 +772,9 @@ function renderDash(){
   cal.innerHTML=h;
   document.getElementById('phrase-list').innerHTML=PHRASES.map((p,i)=>{
     const done=st.done.includes(i);
-    return`<div class="phrase-row ${done?'done':''}"><div class="pcheck">${done?'✓':''}</div><div><div class="pen">${p.en}</div><div class="ptag">${p.cat}</div></div></div>`;
+    return`<div class="phrase-row ${done?'done':''}"><div class="pcheck">${done?'✓':''}</div><div><div class="pen">${p.syntax}</div><div class="ptag">${p.cat}</div></div></div>`;
   }).join('');
 }
 
-renderCats();renderPhrase();renderXP();renderGoal();
+renderHome();renderCats();renderPhrase();renderXP();
 </script>
